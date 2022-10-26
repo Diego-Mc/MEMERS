@@ -1,0 +1,34 @@
+/* TYPOGRAPHY */
+@font-face {
+  font-family: Handjet;
+  src: url('../fonts/Handjet.woff2') format('woff2 supports variations'),
+    url('../fonts/Handjet.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  /* reg 400 bold 700 black 900 */
+}
+/* TODO: add meme fonts */
+
+/* BASICS */
+:root {
+  /* vars */
+}
+
+html {
+  font-family: Handjet, Rubik, sans-serif;
+  /* color */
+}
+
+body {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* HELPERS */
+
+/* LAYOUT */
+
+/* COMPONENTS */
