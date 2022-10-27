@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/main.css" />
     <title>Meme Generator</title>
   </head>
-  <body onload="onInit()">
+  <body>
     <section class="meme-editor">
       <div class="editor-wrapper">
         <section class="proj-name">
@@ -45,17 +45,31 @@
               <i class="bi bi-type"></i>
             </span>
             <input type="text" value="16px" />
-            <i class="bi bi-dash-lg"></i>
-            <i class="bi bi-plus-lg"></i>
+            <i class="bi bi-dash-lg font-decrease"></i>
+            <i class="bi bi-plus-lg font-increase"></i>
           </div>
           <button class="text-color">
-            <input type="color" name="" id="" />
-            <input type="color" name="" id="" />
+            <label for="text-fill">
+              <input
+                type="color"
+                name=""
+                id="text-fill"
+                oninput="this.parentElement.style.backgroundColor = this.value"
+              />
+            </label>
+            <label for="text-outline">
+              <input
+                type="color"
+                name=""
+                id="text-outline"
+                oninput="this.parentElement.style.backgroundColor = this.value"
+              />
+            </label>
           </button>
           <div class="btn-group text-align">
-            <i class="bi bi-text-left"></i>
-            <i class="bi bi-text-center"></i>
-            <i class="bi bi-text-right"></i>
+            <i class="bi bi-text-left text-left"></i>
+            <i class="bi bi-text-center text-center"></i>
+            <i class="bi bi-text-right text-right"></i>
           </div>
           <div class="btn-group emoji">
             <span>😂</span>
@@ -72,7 +86,14 @@
             <i class="bi bi-eraser"></i>
           </div>
           <button class="draw-color">
-            <input type="color" name="" id="" />
+            <label for="draw-fill">
+              <input
+                type="color"
+                name=""
+                id="draw-fill"
+                oninput="this.parentElement.style.backgroundColor = this.value"
+              />
+            </label>
           </button>
           <button class="draw-width">
             <i class="line-weight"></i>
@@ -80,6 +101,8 @@
         </aside>
         <main class="canvas">
           <canvas name="canvas">Please update your browser</canvas>
+          <canvas name="canvas-txt">Please update your browser</canvas>
+          <canvas name="canvas-selection">Please update your browser</canvas>
         </main>
       </div>
     </section>
@@ -122,7 +145,8 @@
     <script src="js/services/utils.service.js"></script>
     <script src="js/services/storage.service.js"></script>
     <script src="js/services/meme.service.js"></script>
+    <script src="js/controllers/text.controller.js"></script>
     <script src="js/controllers/meme.controller.js"></script>
-    <script src="js/controllers/tools.controller.js"></script>
+    <script src="js/controllers/selection.controller.js"></script>
   </body>
 </html>
