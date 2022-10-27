@@ -20,7 +20,7 @@ function renderMeme() {
   elImg.onload = () => {
     _setDimensionsByImg(elImg)
     gCtx.drawImage(elImg, 0, 0, gElCanvas.width, gElCanvas.height)
-    renderLines() //text.controller
+    renderLines()
   }
   const imgId = getImgId()
   elImg.src = `images/meme-templates/${getImgPath(imgId)}`
@@ -242,6 +242,7 @@ function printWordWrap(txt, line) {
     let w = gTxtCtx.measureText(str).width
     if (w > width) {
       if (idx === 1) idx++
+
       gTxtCtx.fillText(
         words.slice(0, idx - 1).join(' '),
         alignX(align, x, width),
@@ -253,6 +254,7 @@ function printWordWrap(txt, line) {
         y + lineHeight * currLine
       )
       currLine++
+
       words = words.splice(idx - 1)
       idx = 1
     } else idx++
@@ -325,7 +327,8 @@ function onTextSelect(line) {
   _clearSelectionCanvas()
   txt = txt || PLACEHOLDER_TXT
   const boundingBox = new Path2D()
-  boundingBox.rect(x, y - height / 2, width, height)
+  const lineHeight = calcLineHeight(gTxtCtx, txt, line)
+  boundingBox.rect(x, y - lineHeight / 2, width, height)
   gSelectionCtx.lineWidth = 4
   gSelectionCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
   gSelectionCtx.setLineDash([4, 8])

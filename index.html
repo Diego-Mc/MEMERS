@@ -8,7 +8,7 @@
     <title>Meme Generator</title>
   </head>
   <body>
-    <section class="meme-editor d-none">
+    <section class="meme-editor">
       <button
         class="close-btn"
         onclick="this.parentElement.classList.toggle('d-none')"
@@ -17,7 +17,7 @@
       </button>
       <div class="editor-wrapper">
         <section class="proj-name">
-          <input type="text" placeholder="Untitle Meme Project..." />
+          <input type="text" placeholder="Untitled Meme Project..." />
         </section>
         <section class="share">
           <div class="btn-group">
@@ -45,14 +45,21 @@
             <span class="btn-i">
               <i class="bi bi-fonts"></i>
             </span>
-            <input type="text" autocomplete="off" list="" />
+            <span class="inner-input dropdown-container on">
+              <span>Arial</span>
+              <ul class="dropdown-menu">
+                <li class="dropdown-item">Arial</li>
+                <li class="dropdown-item">Tahoma</li>
+                <li class="dropdown-item">David</li>
+              </ul>
+            </span>
             <i class="bi bi-caret-down-fill"></i>
           </div>
           <div class="btn-group text-size">
             <span class="btn-i">
               <i class="bi bi-type"></i>
             </span>
-            <input type="text" value="16px" />
+            <input class="inner-input" type="text" value="16px" />
             <i class="bi bi-dash-lg font-decrease"></i>
             <i class="bi bi-plus-lg font-increase"></i>
           </div>
