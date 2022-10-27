@@ -8,14 +8,22 @@
     <title>Meme Generator</title>
   </head>
   <body>
-    <section class="meme-editor">
+    <section class="meme-editor d-none">
+      <button
+        class="close-btn"
+        onclick="this.parentElement.classList.toggle('d-none')"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
       <div class="editor-wrapper">
         <section class="proj-name">
           <input type="text" placeholder="Untitle Meme Project..." />
         </section>
         <section class="share">
           <div class="btn-group">
-            <i class="bi bi-download"></i>
+            <a class="meme-download" download="meme" href="">
+              <i class="bi bi-download"></i>
+            </a>
             <i class="bi bi-facebook"></i>
             <i class="bi bi-whatsapp"></i>
             <i class="bi bi-cloud-arrow-up-fill"></i>
@@ -130,23 +138,68 @@
         <article class="filter-item"><p>Spiderman</p></article>
       </section>
       <section class="image-gallery">
-        <img src="images/meme-templates/leo.jpg" alt="" />
-        <img src="images/meme-templates/putin.jpg" alt="" />
-        <img src="images/meme-templates/patrick.jpg" alt="" />
-        <img src="images/meme-templates/leo.jpg" alt="" />
-        <img src="images/meme-templates/putin.jpg" alt="" />
-        <img src="images/meme-templates/patrick.jpg" alt="" />
-        <img src="images/meme-templates/leo.jpg" alt="" />
-        <img src="images/meme-templates/putin.jpg" alt="" />
-        <img src="images/meme-templates/patrick.jpg" alt="" />
+        <img
+          class="img-item large"
+          src="images/meme-templates/01.jpg"
+          alt=""
+          data-id="1"
+        />
+        <img
+          class="img-item"
+          src="images/meme-templates/02.jpg"
+          alt=""
+          data-id="2"
+        />
+        <img
+          class="img-item"
+          src="images/meme-templates/03.jpg"
+          alt=""
+          data-id="3"
+        />
+        <img
+          class="img-item large"
+          src="images/meme-templates/04.jpg"
+          alt=""
+          data-id="4"
+        />
+        <img
+          class="img-item"
+          src="images/meme-templates/05.jpg"
+          alt=""
+          data-id="5"
+        />
+        <img
+          class="img-item"
+          src="images/meme-templates/06.jpg"
+          alt=""
+          data-id="6"
+        />
+        <img
+          class="img-item"
+          src="images/meme-templates/07.jpg"
+          alt=""
+          data-id="7"
+        />
+        <img
+          class="img-item"
+          src="images/meme-templates/08.jpg"
+          alt=""
+          data-id="8"
+        />
+        <img
+          class="img-item large"
+          src="images/meme-templates/09.jpg"
+          alt=""
+          data-id="9"
+        />
       </section>
     </main>
 
     <script src="js/services/utils.service.js"></script>
     <script src="js/services/storage.service.js"></script>
+    <script src="js/services/gallery.service.js"></script>
     <script src="js/services/meme.service.js"></script>
-    <script src="js/controllers/text.controller.js"></script>
+    <script src="js/controllers/gallery.controller.js"></script>
     <script src="js/controllers/meme.controller.js"></script>
-    <script src="js/controllers/selection.controller.js"></script>
   </body>
 </html>

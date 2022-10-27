@@ -18,12 +18,13 @@ const gMeme = {
   ],
 }
 
-function addText(x, y, width, height, size, font, align, color) {
+function addText(x, y, width, height, size, font, align, color, outline) {
   gMeme.lines.push({
     size,
     font,
     align,
     color,
+    outline,
     txt: '',
     x,
     y,
@@ -31,6 +32,14 @@ function addText(x, y, width, height, size, font, align, color) {
     height,
   })
   textSwitch(+1)
+}
+
+function getImgId() {
+  return gMeme.selectedImgId
+}
+
+function setImgId(id) {
+  gMeme.selectedImgId = id
 }
 
 function getDefaultTextVals() {

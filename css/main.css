@@ -8,6 +8,11 @@
   font-weight: 400 900;
   /* reg 400 bold 700 black 900 */
 }
+
+@font-face {
+  font-family: Impact;
+  src: url('../fonts/impact.ttf');
+}
 /* TODO: add meme fonts */
 
 /* BASICS */
@@ -131,6 +136,10 @@ button,
   align-items: center;
   cursor: pointer;
 }
+.btn-group > a:hover {
+  border: none;
+  box-shadow: none;
+}
 .btn-group > .btn-i {
   cursor: auto;
 }
@@ -140,6 +149,10 @@ button,
 }
 
 /* HELPERS */
+
+.d-none {
+  display: none !important;
+}
 
 /* LAYOUT */
 
@@ -153,6 +166,14 @@ button,
   background-color: #222222aa;
   display: flex;
   align-items: center;
+}
+
+.meme-editor .close-btn {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  border-radius: 50%;
+  padding: 1em;
 }
 
 .meme-editor .editor-wrapper {
@@ -266,7 +287,7 @@ button,
 main.canvas {
   border-radius: 20px;
   position: relative;
-  width: 900px;
+  /* width: 900px; */
 }
 
 main.canvas > * {
@@ -286,9 +307,16 @@ canvas[name='canvas'] {
   z-index: 0;
 }
 
-/* main-header */
+/* gallery */
+
+/** main-header **/
 .main-header {
   background-color: var(--secondary-dark);
+  background: linear-gradient(
+    0deg,
+    var(--main-dark) 0%,
+    var(--secondary-dark) 100%
+  );
   color: white;
 }
 
@@ -310,8 +338,6 @@ canvas[name='canvas'] {
   gap: 32px;
 }
 
-/* gallery */
-
 /** filter **/
 /*** searchbar ***/
 .searchbar {
@@ -320,10 +346,11 @@ canvas[name='canvas'] {
   display: flex;
   align-items: center;
   justify-self: center;
+  color: var(--secondary-dark);
 }
 
 .searchbar input {
-  position: absolute;
+  /* position: absolute; */
   inset-inline: 0;
   font-size: 1.33em;
 }
@@ -346,4 +373,30 @@ canvas[name='canvas'] {
 /** filter **/
 .filter {
   display: grid;
+  color: var(--main-light);
+}
+
+/** image-gallery **/
+.image-gallery {
+  margin: 1rem;
+  display: grid;
+  grid-template: repeat(auto-fill, minmax(300px, 1fr)) / repeat(
+      auto-fill,
+      minmax(300px, 1fr)
+    );
+  aspect-ratio: 1/1;
+  grid-auto-flow: dense;
+  gap: 1rem;
+}
+
+.img-item {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.4rem;
+}
+
+.img-item.large {
+  grid-column: span 2;
+  grid-row: span 2;
 }
