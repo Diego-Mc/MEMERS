@@ -30,7 +30,12 @@
           </div>
         </section>
         <aside class="tools">
-          <input class="text-line" type="text" value="I like falafel" />
+          <input
+            class="text-line"
+            type="text"
+            value=""
+            placeholder="Add text here..."
+          />
           <div class="btn-group text-switch">
             <i class="bi bi-arrow-up text-up"></i>
             <i class="bi bi-arrow-down text-down"></i>
@@ -46,39 +51,34 @@
               <i class="bi bi-fonts"></i>
             </span>
             <span class="inner-input dropdown-container on">
-              <span>Arial</span>
+              <span name="impact">Impact</span>
               <ul class="dropdown-menu">
-                <li class="dropdown-item">Arial</li>
-                <li class="dropdown-item">Tahoma</li>
-                <li class="dropdown-item">David</li>
+                <li class="dropdown-item" name="impact">Impact</li>
+                <li class="dropdown-item" name="secular one">Secular One</li>
+                <li class="dropdown-item" name="rubik">Rubik</li>
+                <li class="dropdown-item" name="montserrat">Montserrat</li>
               </ul>
             </span>
-            <i class="bi bi-caret-down-fill"></i>
           </div>
           <div class="btn-group text-size">
             <span class="btn-i">
               <i class="bi bi-type"></i>
             </span>
-            <input class="inner-input" type="text" value="16px" />
+            <span class="inner-input">16px</span>
             <i class="bi bi-dash-lg font-decrease"></i>
             <i class="bi bi-plus-lg font-increase"></i>
           </div>
           <button class="text-color">
-            <label for="text-fill">
-              <input
-                type="color"
-                name=""
-                id="text-fill"
-                oninput="this.parentElement.style.backgroundColor = this.value"
-              />
-            </label>
             <label for="text-outline">
               <input
                 type="color"
                 name=""
                 id="text-outline"
-                oninput="this.parentElement.style.backgroundColor = this.value"
+                oninput="this.parentElement.style.borderColor = this.value"
               />
+            </label>
+            <label for="text-fill">
+              <input type="color" name="" id="text-fill" />
             </label>
           </button>
           <div class="btn-group text-align">

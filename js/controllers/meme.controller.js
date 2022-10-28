@@ -1,256 +1,269 @@
 'use strict'
 
-// ********************************* MEME ************************************
+const gElCanvases = {
+  meme: document.querySelector('[name=canvas]'),
+  text: document.querySelector('[name=canvas-txt]'),
+  selection: document.querySelector('[name=canvas-selection]'),
+}
 
-const gElCanvas = document.querySelector('[name=canvas]')
-const gCtx = gElCanvas.getContext('2d')
+const gCtxs = {
+  meme: gElCanvases.meme.getContext('2d'),
+  text: gElCanvases.text.getContext('2d'),
+  selection: gElCanvases.selection.getContext('2d'),
+}
 
 window.addEventListener('load', onInit)
+
+// ********************************* MEME ************************************
 
 function onInit() {
   renderMeme()
 
-  document
-    .querySelector('.meme-download')
-    .addEventListener('click', downloadMeme)
+  _addEventListeners()
+
+  setCtxPrefs(gCtxs.text, { lineWidth: 2, textBaseline: 'middle' })
+}
+
+function _addEventListeners() {
+  // HANDLERS (util):
+  const onInput = addEventHandler('input')
+  const onClick = addEventHandler('click')
+
+  // TOOLS:
+  onClick('.text-add', onAddText)
+  onClick('.text-switch .text-up', () => onSelectedLineChange(+1))
+  onClick('.text-switch .text-down', () => onSelectedLineChange(-1))
+  onInput('.text-line', onSetText)
+  onClick('.trash', onRemoveLine)
+  onClick('.dropdown-item[name=impact]', () => onSetFont('Impact'))
+  onClick('.dropdown-item[name="secular one"]', () => onSetFont('Secular One'))
+  onClick('.dropdown-item[name=rubik]', () => onSetFont('Rubik'))
+  onClick('.dropdown-item[name=montserrat]', () => onSetFont('Montserrat'))
+  onClick('.font-decrease', () => onSetFontSize(-1))
+  onClick('.font-increase', () => onSetFontSize(+1))
+  onClick('.text-left', () => onAlignText('left'))
+  onClick('.text-center', () => onAlignText('center'))
+  onClick('.text-right', () => onAlignText('right'))
+  onInput('#text-fill', onFillText)
+  onInput('#text-outline', onOutlineText)
+
+  // SOCIAL:
+  onClick('.meme-download', downloadMeme)
 }
 
 function renderMeme() {
+  const canvases = Object.values(gElCanvases)
+  const canvasContainer = canvases[0].parentNode
   const elImg = new Image()
+
   elImg.onload = () => {
-    _setDimensionsByImg(elImg)
-    gCtx.drawImage(elImg, 0, 0, gElCanvas.width, gElCanvas.height)
-    renderLines()
+    const { naturalWidth: imgWidth, naturalHeight: imgHeight } = elImg
+    const { width, height } = _getAspectCanvasSize(imgWidth / imgHeight)
+
+    canvases.forEach((canvas) => setCanvasSize(canvas, width, height))
+    setElementSize(canvasContainer, width, height)
+    gCtxs.meme.drawImage(elImg, 0, 0, width, height)
+    updateTextLines()
   }
+
   const imgId = getImgId()
   elImg.src = `images/meme-templates/${getImgPath(imgId)}`
-  console.log(elImg)
 }
 
-function _setDimensionsByImg(img) {
-  const { naturalWidth: imgWidth, naturalHeight: imgHeight } = img
-  const { clientHeight: cHeight, clientWidth: cWidth } = gElCanvas.parentNode
+function _getAspectCanvasSize(ratio) {
+  const canvasContainer = gElCanvases.meme.parentNode
 
-  const imgRatio = imgWidth / imgHeight
+  const { clientHeight: cHeight, clientWidth: cWidth } = canvasContainer
 
-  const cStyle = gElCanvas.parentNode.style
+  const isWide = window.getComputedStyle(canvasContainer).width === '100%'
+  const width = parseInt(isWide ? cWidth : ratio * cHeight)
+  const height = parseInt(isWide ? ratio * cWidth : cHeight)
 
-  //check if inside mobile media query - based on that calc either width/height
-  const isMobile = window.matchMedia('(max-width: 600px)').matches
-  console.log(isMobile, imgHeight, imgWidth, cWidth, cHeight)
-
-  const canvasWidth = parseInt(isMobile ? cWidth : imgRatio * cHeight)
-  const canvasHeight = parseInt(isMobile ? imgRatio * cWidth : cHeight)
-
-  //set sizes for all canvas layers
-  setCanvasSize(gElCanvas, canvasWidth, canvasHeight)
-  setCanvasSize(gElTxtCanvas, canvasWidth, canvasHeight)
-  setCanvasSize(gElSelectionCanvas, canvasWidth, canvasHeight)
-
-  if (isMobile) cStyle.height = `${canvasHeight}px`
-  else cStyle.width = `${canvasWidth}px`
+  return { width, height }
 }
 
-function _clearCanvas() {
-  clearCanvas(gElCanvas, gCtx)
+function _clearMemeCanvas() {
+  clearCanvas(gElCanvases.meme, gCtxs.meme)
 }
 
 function downloadMeme() {
   const tempCanvas = document.createElement('canvas')
-  tempCanvas.width = gElCanvas.width
-  tempCanvas.height = gElCanvas.height
+  tempCanvas.width = gElCanvases.meme.width
+  tempCanvas.height = gElCanvases.meme.height
   const tempCtx = tempCanvas.getContext('2d')
-  tempCtx.drawImage(gElCanvas, 0, 0)
-  tempCtx.drawImage(gElTxtCanvas, 0, 0)
+  tempCtx.drawImage(gElCanvases.meme, 0, 0)
+  tempCtx.drawImage(gElCanvases.text, 0, 0)
   const imgSrc = tempCanvas.toDataURL('image/jpeg')
   document.querySelector('.meme-download').href = imgSrc
 }
 
 // ****************************** TEXT ************************************
-const gElTxtCanvas = document.querySelector('[name=canvas-txt]')
-const gTxtCtx = gElTxtCanvas.getContext('2d')
 
-const PLACEHOLDER_TXT = 'Add text here...'
-const gPADDING = 20
+function onSetFont(fontName) {
+  const elDropdown = document.querySelector('.dropdown-container')
+  //focus out from list after selecting by removing and adding hover effect
+  elDropdown.classList.toggle('on')
+  setTimeout(() => elDropdown.classList.toggle('on'), 500)
 
-const LEFT_BOUND = 40 //margin left
-const RIGHT_BOUND = 40 //margin right
-
-const gDefaultVals = {
-  size: 36,
-  font: 'Impact',
-  align: 'center',
-  color: 'white',
-  outline: 'black',
+  updatePrefs({ font: fontName })
+  updateTools('font')
+  updateTextLines()
 }
 
-window.addEventListener('load', onInitTxt)
+function updateTools(toolName = undefined) {
+  const { font, color, outline, align, size } = getUserPrefs()
+  const { text = '' } = getCurrLine() || {}
 
-function onInitTxt() {
-  document.querySelector('.text-add').addEventListener('click', onAddText)
-  document
-    .querySelector('.text-switch .text-up')
-    .addEventListener('click', () => onTextSwitch(+1))
-  document
-    .querySelector('.text-switch .text-down')
-    .addEventListener('click', () => onTextSwitch(-1))
+  const updators = {
+    // Text line
+    text: () => {
+      const elTextInput = document.querySelector('.text-line')
+      elTextInput.value = text
+      elTextInput.focus()
+    },
+    // Font
+    font: () => {
+      const elSelectedFont = document.querySelector('.dropdown-container>span')
+      elSelectedFont.setAttribute('name', font.toLowerCase())
+      elSelectedFont.innerText = font
+    },
 
-  document.querySelector('.text-line').addEventListener('input', onSetText)
+    // Fill color
+    color: () => {
+      const elColorLabel = document.querySelector('[for=text-fill]')
+      elColorLabel.style.backgroundColor = color
+    },
 
-  document.querySelector('.trash').addEventListener('click', onRemoveText)
+    // Outline color
+    outline: () => {
+      const elColorLabel = document.querySelector('[for=text-outline]')
+      elColorLabel.style.borderColor = outline
+    },
 
-  document
-    .querySelector('.font-decrease')
-    .addEventListener('click', () => onSetFontSize(-1))
+    // Alignment
+    align: () => {
+      const alignBtns = [...document.querySelectorAll('.text-align > *')]
+      alignBtns
+        .map((elBtn) => elBtn.classList)
+        .forEach((btnClasses) => {
+          if (btnClasses.contains(`text-${align}`)) btnClasses.add('selected')
+          else btnClasses.remove('selected')
+        })
+    },
 
-  document
-    .querySelector('.font-increase')
-    .addEventListener('click', () => onSetFontSize(+1))
+    // Font size
+    size: () => {
+      const elSize = document.querySelector('.text-size .inner-input')
+      elSize.innerText = size + 'px'
+    },
+  }
 
-  document
-    .querySelector('.text-left')
-    .addEventListener('click', () => onAlignTxt('left'))
+  // Emojies (support adding emojies)
 
-  document
-    .querySelector('.text-center')
-    .addEventListener('click', () => onAlignTxt('center'))
+  // Selected tool (pen/eraser)
 
-  document
-    .querySelector('.text-right')
-    .addEventListener('click', () => onAlignTxt('right'))
+  // Pen fill
 
-  document.querySelector('#text-fill').addEventListener('input', onFillText)
+  // Pen Weight
 
-  document
-    .querySelector('#text-outline')
-    .addEventListener('input', onOutlineText)
+  //Update all tools or a specific one
+  if (!toolName) Object.values(updators).forEach((cb) => cb())
+  else updators[toolName]()
 }
 
-function onFillText({ target }) {
-  //TODO: use gSelected...(everywhere)
-  const { value } = target
-  const currLine = getCurrLine()
-  if (currLine) currLine.color = value
-  else gDefaultVals.color = value
-  updateTxtCanvas()
+function onFillText({ target: { value: color } }) {
+  updatePrefs({ color })
+  updateTools('color')
+  updateTextLines()
 }
 
-function onOutlineText({ target }) {
-  //TODO: use gSelected...(everywhere)
-  const { value } = target
-  const currLine = getCurrLine()
-  if (currLine) currLine.outline = value
-  else gDefaultVals.outline = value
-  updateTxtCanvas()
+function onOutlineText({ target: { value: outline } }) {
+  updatePrefs({ outline })
+  updateTools('outline')
+  updateTextLines()
 }
 
-function onRemoveText() {
-  removeText()
-  renderLines()
-  const newLine = getCurrLine()
-  if (newLine) onTextSelect(newLine)
-  else _clearSelectionCanvas()
-}
-
-function onAddText() {
-  const len = getLines().length
-  let { size, font, align, color, outline } = getCurrLine() || gDefaultVals
-  let txt = PLACEHOLDER_TXT
-  let x = LEFT_BOUND
-  let y =
-    len === 0 ? 50 : len === 1 ? gElCanvas.height - 50 : gElCanvas.height / 2
-  let width = gElTxtCanvas.clientWidth - x - x
-  let height = calcLineHeight(gTxtCtx, txt, { size, font })
-
-  addText(x, y, width, size, size, font, align, color, outline)
-  renderLines()
-  onTextSelect(getCurrLine())
-}
-
-//TODO: change txt for text
-function onAlignTxt(alignStr) {
-  //TODO: add radio behaviour with css .selected
-  alignText(alignStr)
-  gDefaultVals.align = alignStr
-  updateTxtCanvas()
-}
-
-function onSetFontSize(diff) {
-  const elSizeInput = document.querySelector('.text-size input')
-  const value = +elSizeInput.value.match(/\d+(?=px)/)[0]
-  elSizeInput.value = value + diff + 'px'
-  setFontSize(diff)
-
-  renderLines()
-  //update height ... (also in multi-line)
+function onRemoveLine() {
+  removeLine()
+  updateTextLines()
   updateSelectionCanvas()
 }
 
-function onTextSwitch(dir) {
-  const newLine = textSwitch(dir)
+function onAddText() {
+  const LEFT_BOUND = 40
+  const lineNum = getLines().length
 
-  if (!newLine) return
+  let x = LEFT_BOUND
+  let y = _alignY(lineNum)
+  let width = gElCanvases.text.clientWidth - x - x
 
-  _updateTextInput(newLine)
-  onTextSelect(newLine)
-
-  document.querySelector('.text-size input').value = newLine.size + 'px'
+  addLine(x, y, width)
+  updateTools('text')
+  updateTextLines()
+  updateSelectionCanvas()
 }
 
-function renderLine(line) {
-  let { txt, size, font, align, color, outline } = line
-  gTxtCtx.font = `${size}px ${font}`
-  gTxtCtx.fillStyle = color
-  gTxtCtx.strokeStyle = outline
-  gTxtCtx.lineWidth = 2
-  txt = txt || PLACEHOLDER_TXT
-  gTxtCtx.textBaseline = 'middle'
-  gTxtCtx.textAlign = align
-
-  printWordWrap(txt, line)
+function onAlignText(alignment) {
+  updatePrefs({ align: alignment })
+  updateTools('align')
+  updateTextLines()
 }
 
-function renderLines() {
-  const memeData = getMemeData()
-  const { lines } = memeData
-  console.log('HEY', lines)
+function onSetFontSize(diff) {
+  const { innerText: sizeStr } = document.querySelector(
+    '.text-size .inner-input'
+  )
+  const size = +sizeStr.match(/\d+(?=px)/)[0] + diff
 
-  _clearTxtCanvas()
-  lines.forEach(renderLine)
-  const currLine = getCurrLine()
-  _updateTextInput(currLine)
+  updatePrefs({ size })
+  updateTools('size')
+  updateTextLines()
+  updateSelectionCanvas()
 }
 
-function printWordWrap(txt, line) {
-  let lineHeight = calcLineHeight(gTxtCtx, txt, line)
+function onSelectedLineChange(dir) {
+  const lineIdx = getSelectedLineIdx() + dir
+  setSelectedLineIdx(lineIdx)
+  updateTools('text')
+  updateSelectionCanvas()
+}
 
-  let { x, y, width, align } = line
+function updateTextLines() {
+  clearCanvas(gElCanvases.text, gCtxs.text)
+  getLines().forEach(_renderLineWithWrap)
+}
 
-  if (width <= 0) return
+function _renderLineWithWrap(line) {
+  setCtxPrefs(gCtxs.text, line)
 
-  //get words separated by space, check 1st word, if smaller than maxWidth
-  //check the next word...
-  //if found a word that is lengthier than maxWidth it means that all words
-  //from previous weren't, so idx-- and splice them out to print a full line
-  //within the width boundary. afterwards currLine++ and repeat.
+  const PLACEHOLDER_TEXT = 'Add text here...'
 
-  let words = txt.split(' ')
+  let { text = PLACEHOLDER_TEXT, x, y, width: textBoxWidth, align } = line
+
+  let lineHeight = _getLineHeight()
+
+  if (textBoxWidth <= 0) return
+
+  // get words separated by space, check 1st word, if smaller than
+  // maxWidth check the next word, and so on...
+  // if found a word that is lengthier than maxWidth it means that all words
+  // from previous weren't, so idx-- and splice them out to print a full line
+  // within the width boundary. afterwards currLine++ and repeat.
+  // at the end - calc the new height of the textbox
+
+  let words = text.split(' ')
   let currLine = 0
   let idx = 1
+
   while (words.length > 0 && idx <= words.length) {
     let str = words.slice(0, idx).join(' ')
-    let w = gTxtCtx.measureText(str).width
-    if (w > width) {
+    let lineWidth = gCtxs.text.measureText(str).width
+    if (lineWidth > textBoxWidth) {
       if (idx === 1) idx++
-
-      gTxtCtx.fillText(
+      printText(
+        gCtxs.text,
         words.slice(0, idx - 1).join(' '),
-        alignX(align, x, width),
-        y + lineHeight * currLine
-      )
-      gTxtCtx.strokeText(
-        words.slice(0, idx - 1).join(' '),
-        alignX(align, x, width),
+        _alignX(align, x, textBoxWidth),
         y + lineHeight * currLine
       )
       currLine++
@@ -259,194 +272,177 @@ function printWordWrap(txt, line) {
       idx = 1
     } else idx++
   }
+
   if (idx > 0) {
-    gTxtCtx.fillText(
+    printText(
+      gCtxs.text,
       words.slice(0, idx - 1).join(' '),
-      alignX(align, x, width),
-      y + lineHeight * currLine
-    )
-    gTxtCtx.strokeText(
-      words.slice(0, idx - 1).join(' '),
-      alignX(align, x, width),
+      _alignX(align, x, textBoxWidth),
       y + lineHeight * currLine
     )
   }
-  line.height = lineHeight * (currLine + 1)
-  // TODO: make each line go up/down on render to make text middle aligned
+
+  updatePrefs({ height: lineHeight * (currLine + 1) })
 }
 
-function onSetText({ target: elTextInput }) {
+function onSetText({ target: { value: text } }) {
   if (!getCurrLine()) onAddText()
-  setText(elTextInput.value)
-  updateTxtCanvas()
+  updatePrefs({ text })
+  updateTools('text')
+  updateTextLines()
+  updateSelectionCanvas()
 }
 
-function updateTxtCanvas() {
-  _clearTxtCanvas()
-  renderLines()
-}
-
-function _updateTextInput(line) {
-  const txt = line ? line.txt : ''
-  const elTextInput = document.querySelector('.text-line')
-
-  elTextInput.value = txt
-  if (txt === '') elTextInput.placeholder = PLACEHOLDER_TXT
-}
-
-function alignX(align, x, width = gElTxtCanvas.width) {
+function _alignX(align, x, width = gElCanvases.text.width) {
   switch (align) {
     case 'center':
       return x + width / 2
     case 'left':
-      return x + gPADDING
+      return x
     case 'right':
-      return x + width - gPADDING
+      return x + width
   }
 }
 
-function _clearTxtCanvas() {
-  clearCanvas(gElTxtCanvas, gTxtCtx)
+function _alignY(lineNum) {
+  //return position for textY based on amount of text lines
+  const MARGIN = 50
+  const { height: canvasHeight } = gElCanvases.meme
+
+  switch (lineNum) {
+    case 0:
+      return MARGIN
+    case 1:
+      return canvasHeight - MARGIN
+    default:
+      return canvasHeight / 2
+  }
+}
+
+function _getLineHeight() {
+  return calcLineHeight(gCtxs.text, 'example', getCurrLine() || getUserPrefs())
 }
 
 // ****************************** SELECTION *********************************
 
-const gElSelectionCanvas = document.querySelector('[name=canvas-selection]')
-const gSelectionCtx = gElSelectionCanvas.getContext('2d')
-
 let gCurrSelection = {
-  line: {},
   box: Path2D,
   resize: Path2D,
   isDrag: false,
   isResize: false,
 }
 
-function onTextSelect(line) {
-  let { txt, x, y, width, height } = line
-  _clearSelectionCanvas()
-  txt = txt || PLACEHOLDER_TXT
+function onTextSelect() {
+  const { selection: ctx } = gCtxs
+  const { x, y, width, height } = getCurrLine() || {}
+
+  gCurrSelection.box = _renderBoundingBox(ctx, x, y, width, height)
+  gCurrSelection.resize = _renderResizeIcon(ctx, x, y, width, height)
+
+  gElCanvases.selection.addEventListener('mousemove', onMouseMove)
+  gElCanvases.selection.addEventListener('mousedown', onMouseDown)
+  gElCanvases.selection.addEventListener('mouseup', onMouseUp)
+}
+
+function _renderBoundingBox(ctx, x, y, width, height) {
   const boundingBox = new Path2D()
-  const lineHeight = calcLineHeight(gTxtCtx, txt, line)
-  boundingBox.rect(x, y - lineHeight / 2, width, height)
-  gSelectionCtx.lineWidth = 4
-  gSelectionCtx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
-  gSelectionCtx.setLineDash([4, 8])
-  gSelectionCtx.lineCap = 'round'
-  gSelectionCtx.stroke(boundingBox)
-  gSelectionCtx.strokeStyle = 'rgba(255, 255, 255, 0)'
-  gSelectionCtx.setLineDash([])
-  gSelectionCtx.lineWidth = 8
-  gSelectionCtx.stroke(boundingBox)
 
+  const lineHeight = _getLineHeight()
+  boundingBox.rect(x, y - lineHeight, width, height)
+  setCtxPrefs(ctx, {
+    lineWidth: 4,
+    outline: '#ffffff80',
+    lineDash: [4, 8],
+    lineCap: 'round',
+  })
+  ctx.stroke(boundingBox)
+  setCtxPrefs(ctx, {
+    lineWidth: 8,
+    outline: '#ffffff00',
+    lineDash: [],
+  })
+  ctx.stroke(boundingBox)
+  return boundingBox
+}
+
+function _renderResizeIcon(ctx, x, y, width, height) {
   const resizeIcon = new Path2D()
-  resizeIcon.arc(x + width, y, 6, 0, 2 * Math.PI)
-  gSelectionCtx.fillStyle = 'red'
-  gSelectionCtx.fill(resizeIcon)
 
-  gCurrSelection.box = boundingBox
-  gCurrSelection.resize = resizeIcon
-  gCurrSelection.line = getCurrLine()
-
-  gElSelectionCanvas.addEventListener('mousemove', onMouseMove)
-  gElSelectionCanvas.addEventListener('mousedown', onMouseDown)
-  gElSelectionCanvas.addEventListener('mouseup', onMouseUp)
+  const lineHeight = _getLineHeight()
+  resizeIcon.arc(x + width, y - lineHeight / 2, 6, 0, 2 * Math.PI)
+  setCtxPrefs(ctx, { color: 'red' })
+  gCtxs.selection.fill(resizeIcon)
+  return resizeIcon
 }
 
 function onMouseMove(ev) {
   if (gCurrSelection.isDrag) {
     const { clientX, clientY } = ev
-    const { x, y } = gCurrSelection.select
+    const { x, y } = gCurrSelection.selection
 
     const [dx, dy] = [clientX - x, clientY - y]
 
-    gCurrSelection.line.x += dx
-    gCurrSelection.line.y += dy
+    const { x: textX, y: textY } = getCurrLine()
+    updatePrefs({ x: textX + dx, y: textY + dy })
 
-    renderLines()
+    updateTextLines()
     updateSelectionCanvas()
 
-    gCurrSelection.select = { x: clientX, y: clientY }
+    gCurrSelection.selection = { x: clientX, y: clientY }
   } else if (gCurrSelection.isResize) {
     const { clientX } = ev
-    const { x } = gCurrSelection.select
+    const { x } = gCurrSelection.selection
 
     const dx = clientX - x
 
-    // gCurrSelection.line.x += dx
-    const { line } = gCurrSelection
-    line.x -= dx
-    line.width += dx * 2
+    const { x: textX, width: textWidth } = getCurrLine()
+    updatePrefs({ x: textX - dx, width: textWidth + dx * 2 })
 
-    renderLines()
+    updateTextLines()
     updateSelectionCanvas()
-
-    gCurrSelection.select.x = clientX
+    gCurrSelection.selection = { x: clientX }
   } else {
-    const isPointInStroke = gSelectionCtx.isPointInStroke(
-      gCurrSelection.box,
-      ev.offsetX,
-      ev.offsetY
-    )
-    if (isPointInStroke) {
-      gElSelectionCanvas.style.cursor = 'grab'
-    }
-
-    const isPointInPath = gSelectionCtx.isPointInPath(
-      gCurrSelection.resize,
-      ev.offsetX,
-      ev.offsetY
-    )
-    if (isPointInPath) {
-      gElSelectionCanvas.style.cursor = 'col-resize'
-    }
-
-    if (!isPointInPath && !isPointInStroke) {
-      gElSelectionCanvas.style.cursor = 'auto'
+    if (_isOnBoundingBox()) {
+      gElCanvases.selection.style.cursor = 'grab'
+    } else if (_isOnResizeIcon()) {
+      gElCanvases.selection.style.cursor = 'col-resize'
+    } else {
+      gElCanvases.selection.style.cursor = 'auto'
     }
   }
 }
 
 function onMouseDown(ev) {
-  const { clientX, clientY } = ev
-  gCurrSelection.select = { x: clientX, y: clientY }
-
-  const isPointInPath = gSelectionCtx.isPointInPath(
-    gCurrSelection.resize,
-    ev.offsetX,
-    ev.offsetY
-  )
-  if (isPointInPath) {
-    gElSelectionCanvas.style.cursor = 'col-resize'
+  const { clientX: x, clientY: y } = ev
+  gCurrSelection.selection = { x, y }
+  if (_isOnResizeIcon(x, y)) {
+    gElCanvases.selection.style.cursor = 'col-resize'
     gCurrSelection.isResize = true
-  } else {
-    const isPointInStroke = gSelectionCtx.isPointInStroke(
-      gCurrSelection.box,
-      ev.offsetX,
-      ev.offsetY
-    )
-    if (isPointInStroke) {
-      gCurrSelection.isDrag = true
-      gElSelectionCanvas.style.cursor = 'grabbing'
-    }
+  } else if (_isOnBoundingBox(x, y)) {
+    gCurrSelection.isDrag = true
+    gElCanvases.selection.style.cursor = 'grabbing'
   }
-
-  // if (!isPointInPath && !isPointInStroke) {
-  //   gElSelectionCanvas.style.cursor = 'auto'
-  // }
 }
 
-function onMouseUp(ev) {
+function onMouseUp() {
   gCurrSelection.isDrag = false
   gCurrSelection.isResize = false
-  gCurrSelection.select = null
-}
-
-function _clearSelectionCanvas() {
-  clearCanvas(gElSelectionCanvas, gSelectionCtx)
+  gCurrSelection.selection = null
 }
 
 function updateSelectionCanvas() {
   _clearSelectionCanvas()
-  onTextSelect(gCurrSelection.line)
+  onTextSelect()
+}
+
+function _clearSelectionCanvas() {
+  clearCanvas(gElCanvases.selection, gCtxs.selection)
+}
+
+function _isOnBoundingBox(x, y) {
+  return gCtxs.selection.isPointInStroke(gCurrSelection.box, x, y)
+}
+
+function _isOnResizeIcon(x, y) {
+  return gCtxs.selection.isPointInPath(gCurrSelection.resize, x, y)
 }

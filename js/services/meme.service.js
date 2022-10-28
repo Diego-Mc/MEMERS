@@ -5,7 +5,7 @@ const gMeme = {
   selectedLineIdx: -1,
   lines: [
     // {
-    //   txt: 'Hello world',
+    //   text: 'Hello world',
     //   font: 'serif',
     //   size: 20,
     //   align: 'left',
@@ -18,20 +18,67 @@ const gMeme = {
   ],
 }
 
-function addText(x, y, width, height, size, font, align, color, outline) {
-  gMeme.lines.push({
-    size,
-    font,
-    align,
-    color,
-    outline,
-    txt: '',
+const gUserPrefs = {
+  size: 36,
+  font: 'Impact',
+  align: 'center',
+  color: 'white',
+  outline: 'black',
+}
+
+function addLine(x, y, width) {
+  const len = gMeme.lines.push({
+    ...gUserPrefs,
     x,
     y,
     width,
-    height,
   })
-  textSwitch(+1)
+  setCurrLine(len - 1)
+}
+
+function updatePrefs(changes) {
+  //take changes and apply them to defaultPrefs & to selected line
+  const line = getCurrLine()
+  for (const key in changes) {
+    if (gUserPrefs[key]) gUserPrefs[key] = changes[key]
+    if (line) line[key] = changes[key]
+  }
+}
+
+function getUserPrefs() {
+  return gUserPrefs
+}
+
+function removeLine() {
+  const removed = gMeme.lines.splice(gMeme.selectedLineIdx, 1)[0]
+  gMeme.selectedLineIdx--
+  return removed
+}
+
+function getSelectedLineIdx() {
+  return gMeme.selectedLineIdx
+}
+
+function setSelectedLineIdx(lineIdx) {
+  const { length: len } = gMeme.lines
+  if (len === 0) return (gMeme.selectedLineIdx = -1)
+
+  gMeme.selectedLineIdx = (lineIdx + len) % len
+}
+
+function getCurrLine() {
+  const { lines, selectedLineIdx } = gMeme
+  return selectedLineIdx >= 0 ? lines[selectedLineIdx] : null
+}
+
+function getLines() {
+  return gMeme.lines
+}
+
+// UPDATED^
+
+function setCurrLine(idx) {
+  gMeme.selectedLineIdx = idx
 }
 
 function getImgId() {
@@ -40,57 +87,6 @@ function getImgId() {
 
 function setImgId(id) {
   gMeme.selectedImgId = id
-}
-
-function getDefaultTextVals() {
-  return gDefaultVals
-}
-
-function setText(txt) {
-  if (!gMeme.lines.length) return
-  getCurrLine().txt = txt
-}
-
-function alignText(alignStr) {
-  const { selectedLineIdx, lines } = gMeme
-
-  if (!lines.length) return
-
-  lines[selectedLineIdx].align = alignStr
-}
-
-function removeText() {
-  if (!gMeme.lines.length) return
-  const removed = gMeme.lines.splice(gMeme.selectedLineIdx, 1)[0]
-  textSwitch(-1)
-  return removed
-}
-
-function setFontSize(diff) {
-  const { selectedLineIdx, lines } = gMeme
-
-  if (!lines.length) return
-
-  lines[selectedLineIdx].size += diff
-}
-
-function textSwitch(dir) {
-  const { selectedLineIdx, lines } = gMeme
-
-  if (!lines.length) return
-
-  gMeme.selectedLineIdx = (lines.length + selectedLineIdx + dir) % lines.length
-  return getCurrLine()
-}
-
-function getCurrLine() {
-  if (!gMeme.lines.length) return
-
-  return gMeme.lines[gMeme.selectedLineIdx]
-}
-
-function getLines() {
-  return gMeme.lines
 }
 
 function getMemeData() {

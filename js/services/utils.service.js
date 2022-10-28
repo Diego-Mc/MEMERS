@@ -9,12 +9,49 @@ function setCanvasSize(canvas, width, height) {
   canvas.height = height
 }
 
+function setElementSize(el, width, height) {
+  el.style.width = `${width}px`
+  el.style.height = `${height}px`
+}
+
 function calcLineHeight(ctx, txt, { size, font }) {
   ctx.font = `${size}px ${font}`
 
   const {
     actualBoundingBoxAscent: topHeight,
     actualBoundingBoxDescent: bottomHeight,
-  } = gTxtCtx.measureText(txt)
+  } = gCtxs.text.measureText(txt)
   return topHeight + bottomHeight
+}
+
+function addEventHandler(type) {
+  return (query, cb) => document.querySelector(query).addEventListener(type, cb)
+}
+
+function printText(ctx, text, x, y) {
+  ctx.fillText(text, x, y)
+  ctx.strokeText(text, x, y)
+}
+
+function setCtxPrefs(ctx, options) {
+  const {
+    size,
+    font,
+    align,
+    color,
+    outline,
+    lineWidth,
+    baseline,
+    lineDash,
+    lineCap,
+  } = options
+  if (size) ctx.font = ctx.font.replace(/\d+(?=px)/, size)
+  if (font) ctx.font = `${ctx.font.split(' ')[0]} ${font}`
+  if (align) ctx.textAlign = align
+  if (color) ctx.fillStyle = color
+  if (outline) ctx.strokeStyle = outline
+  if (lineWidth) ctx.lineWidth = lineWidth
+  if (baseline) ctx.textBaseline = baseline
+  if (lineDash) ctx.setLineDash(lineDash)
+  if (lineCap) ctx.lineCap = lineCap
 }
