@@ -1,6 +1,5 @@
 'use strict'
 
-//TODO: remove for prod
 let gMeme = {
   meta: { idx: 0, name: 'Untitled Meme Project', imgId: 5, memePreview: '' },
   selectedLineIdx: -1,
@@ -15,7 +14,6 @@ let gMeme = {
 }
 
 function initMemeEditor(data) {
-  console.log(data)
   const { imgId = getRandImgId(), memeIdx = generateMemeIdx() } = data
   const meme = {
     meta: {

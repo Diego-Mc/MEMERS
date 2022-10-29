@@ -94,7 +94,6 @@ function renderMeme() {
 }
 
 function _renderMemeName() {
-  console.log('GEEG')
   const { name: memeName = '' } = getMemeMeta()
   document.querySelector('.proj-name input').value = memeName
 }
@@ -417,10 +416,29 @@ function onTextSelect() {
   gCurrSelection.box = _renderBoundingBox(ctx, x, y, width, height)
   gCurrSelection.resize = _renderResizeIcon(ctx, x, y, width, height)
 
+  // gElCanvases.selection.addEventListener('touchmove', onTouchMove)
+  // gElCanvases.selection.addEventListener('touchstart', onTouchStart)
+  // gElCanvases.selection.addEventListener('touchend', onTouchEnd)
+
   gElCanvases.selection.addEventListener('mousemove', onMouseMove)
   gElCanvases.selection.addEventListener('mousedown', onMouseDown)
   gElCanvases.selection.addEventListener('mouseup', onMouseUp)
 }
+
+//TODO: add touch support
+// function onTouchStart(ev) {
+//   ev.preventDefault()
+// }
+
+// function onTouchMove(ev) {
+//   const rect = canvas.getBoundingClientRect()
+//   const cssX = e.touches[0].clientX - rect.left
+//   const cssY = e.touches[0].clientY - rect.top
+//   const pixelX = (cssX * canvas.width) / rect.width
+//   const pixelY = (cssY * canvas.height) / rect.height
+// }
+
+// function onTouchEnd(ev) {}
 
 function onMouseMove(ev) {
   if (gCurrSelection.isDrag) _onDrag(ev)
