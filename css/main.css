@@ -121,6 +121,10 @@ input[type='text']:focus-visible {
   outline: none;
 }
 
+input::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+
 label:has(> input[type='color']) {
   min-width: 1em;
   min-height: 1em;
@@ -279,10 +283,18 @@ button.disabled,
 /* HELPERS */
 
 .d-none {
-  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* LAYOUT */
+.wrapper {
+  max-width: 1260px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
 /* COMPONENTS */
 
@@ -291,9 +303,10 @@ button.disabled,
   position: fixed;
   inset: 0;
   z-index: 10;
-  background-color: #222222aa;
+  background-color: var(--main-dark);
   display: flex;
   align-items: center;
+  opacity: 1;
 }
 
 .meme-editor .close-btn {
@@ -306,10 +319,10 @@ button.disabled,
 
 .meme-editor .editor-wrapper {
   display: grid;
-  grid-template: 2.83em 7.5em calc(100vh - 10.33em - 40px - 6rem) / 1fr 10.83em;
-  grid-template-areas: 'proj-name share' 'tools tools' 'canvas canvas';
-  width: max-content;
-  margin-inline: auto;
+  grid-template: min-content 1fr min-content / 1fr;
+  grid-template-areas: 'proj-name' 'canvas' 'tools';
+  height: 100%;
+  width: 100vw;
   gap: 20px;
 }
 
@@ -323,14 +336,6 @@ button.disabled,
 }
 
 /** proj-name **/
-/* .proj-name {
-  position: relative;
-}
-
-.proj-name .bi {
-  position: absolute;
-  inset: 0;
-} */
 
 .proj-name {
   position: relative;
@@ -360,6 +365,9 @@ button.disabled,
 .meme-editor .canvas {
   grid-area: canvas;
   height: 100%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
 }
 
 .meme-editor .canvas > canvas {
@@ -371,17 +379,35 @@ button.disabled,
 .meme-editor .tools {
   grid-area: tools;
   display: grid;
-  grid-template: repeat(2, 2.67em) / repeat(4, 2.67em) 1fr repeat(4, 2.67em) 1fr repeat(
-      2,
-      2.67em
-    );
-  column-gap: 15px;
+  grid-template: repeat(3, 2.67em) / repeat(5, 2.67em);
+  gap: 15px;
   align-content: space-between;
   grid-template-areas:
-    'text text text text . text-size text-size text-size text-size . draw-tools draw-tools'
-    'text-switch trash text-add emoji . text-font text-font text-color text-align . draw-color draw-width';
+    'text-size text-size text-size text-add trash'
+    'text-font text-font text-align text-color text-outline'
+    'draw-tools draw-tools draw-color draw-width emoji';
   padding: 20px;
   height: 100%;
+  width: 100%;
+  justify-content: space-between;
+  justify-content: center;
+}
+
+.tools .text-size .inner-input {
+  display: none;
+}
+
+.tools .text-color:not(.mobile-only) [for='text-outline'] {
+  display: none;
+}
+
+.tools .text-color.mobile-only {
+  grid-area: text-outline;
+}
+
+.tools .text-switch,
+.tools .text-line {
+  display: none;
 }
 
 /** tools **/
@@ -541,14 +567,6 @@ canvas[name='canvas'] {
   color: white;
 }
 
-.main-header .header-wrapper {
-  max-width: 1260px;
-  margin-inline: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .main-header .logo {
   cursor: pointer;
 }
@@ -561,19 +579,38 @@ canvas[name='canvas'] {
 
 /** filter **/
 .filter {
-  display: grid;
+  flex-direction: column;
   color: var(--main-light);
+  position: relative;
+}
+
+.filter .flexible-btn {
+  position: absolute;
+  right: 0;
+  /* padding: 25px; */
+}
+
+.filter .flexible-btn:hover {
+  color: var(--highlight);
+  cursor: pointer;
 }
 
 /*** searchbar ***/
+.filter-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
 .searchbar {
   position: relative;
-  width: 400px;
+  max-width: 400px;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-self: center;
   color: var(--secondary-dark);
-  margin-bottom: 3rem;
 }
 
 .searchbar input {
@@ -596,6 +633,7 @@ canvas[name='canvas'] {
 .searchbar .bi-search:hover {
   color: var(--highlight);
 }
+
 /*** filter-items ***/
 .filter-items {
   display: flex;
@@ -649,9 +687,54 @@ canvas[name='canvas'] {
   grid-row: span 2;
 }
 
-@media screen and (min-width: 1300px) {
+@media screen and (min-width: 920px) {
+  .text-color.mobile-only {
+    display: none;
+  }
   .meme-editor .editor-wrapper {
-    grid-template: 2.83em 25em / 1fr 10.83em max-content;
+    grid-template: 2.83em 7.5em calc(100vh - 10.33em - 40px - 6rem) / 1fr 10.83em;
+    grid-template-areas: 'proj-name share' 'tools tools' 'canvas canvas';
+    width: max-content;
+    height: unset;
+    margin-inline: auto;
+  }
+  .meme-editor .tools {
+    grid-template: repeat(2, 2.67em) / repeat(4, 2.67em) 1fr repeat(4, 2.67em) 1fr repeat(
+        2,
+        2.67em
+      );
+    row-gap: 0;
+    grid-template-areas:
+      'text text text text . text-size text-size text-size text-size . draw-tools draw-tools'
+      'text-switch trash text-add emoji . text-font text-font text-color text-align . draw-color draw-width';
+  }
+  .tools .text-size .inner-input {
+    display: flex;
+  }
+
+  .tools .text-color:not(.mobile-only) [for='text-outline'] {
+    display: block;
+  }
+
+  .tools .text-color.mobile-only {
+    display: none;
+  }
+
+  .tools .text-switch,
+  .tools .text-line {
+    display: flex;
+  }
+}
+
+@media screen and (min-width: 1300px) {
+  .meme-editor {
+    background-color: var(--placeholder);
+  }
+
+  .meme-editor .editor-wrapper {
+    width: 100%;
+    height: 100%;
+    grid-template: 2.83em 1fr / 1fr 10.83em max-content;
     grid-template-areas: 'proj-name share tools' 'canvas canvas tools';
   }
 
@@ -659,7 +742,7 @@ canvas[name='canvas'] {
     grid-area: tools;
     display: grid;
     grid-template: repeat(8, 2.67em) / repeat(4, 2.67em);
-    column-gap: 15px;
+    gap: 20px;
     align-content: space-between;
     grid-template-areas:
       'text text text text'
@@ -671,7 +754,8 @@ canvas[name='canvas'] {
       'emoji emoji emoji emoji'
       'draw-tools draw-tools draw-color draw-width';
     padding: 20px;
-    height: 100%;
+    height: fit-content;
+    align-self: center;
   }
 
   .tools .emoji {
@@ -707,7 +791,4 @@ canvas[name='canvas'] {
   .tools .text-switch > .bi-arrow-down-up {
     display: none;
   }
-}
-
-@media screen and (min-width: 920px) {
 }

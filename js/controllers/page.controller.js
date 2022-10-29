@@ -3,24 +3,30 @@
 window.addEventListener('load', onInitGallery)
 
 function onInitGallery() {
-  document
-    .querySelector('.projects-link')
-    .addEventListener('click', onRenderProjects)
-
-  document
-    .querySelector('.gallery-link')
-    .addEventListener('click', onRenderGallery)
-  ;[...document.querySelectorAll('.filter-item')].forEach((elItem) =>
-    elItem.addEventListener('click', () => onFilterSelect(elItem))
-  )
+  const onClick = addEventHandler('click')
+  const onInput = addEventHandler('input')
 
   onRenderGallery()
+
+  onClick('.projects-link', onRenderProjects)
+  onClick('.gallery-link', onRenderGallery)
+  onInput('.searchbar input', ({ target: { value } }) =>
+    _renderMemeTemplates(value)
+  )
+  onClick('.flexible-btn', () => editMeme(getRandImgId()))
 }
 
 function onFilterSelect(el) {
-  const size = parseInt(getComputedStyle(el).getPropertyValue('font-size'))
-  console.log(size)
-  el.style.fontSize = size + 1 + 'px'
+  growTag(el, +1)
+  _renderMemeTemplates(el.innerText)
+  document.querySelector('.searchbar input').value = el.innerText
+}
+
+function growTag(elTag, diff) {
+  const size = parseInt(getComputedStyle(elTag).getPropertyValue('font-size'))
+  elTag.style.fontSize = size + +diff + 'px'
+
+  // TODO: change for spanning in grid to grow
 }
 
 function editMeme(imgId) {
@@ -30,40 +36,14 @@ function editMeme(imgId) {
 }
 
 function onRenderGallery() {
-  const memeTemplates = getMemeTemplates()
-
-  const memeTemplateImagesHTML = memeTemplates
-    .map(
-      ({ id, path }) => `<img
-          class="img-item"
-          src="images/meme-templates/${path}"
-          data-id="${id}" />`
-    )
-    .join('')
-  document.querySelector('.image-gallery').innerHTML = memeTemplateImagesHTML
-
-  const memeTagsMap = getMemeTagsMap()
-  const tags = Array.from(memeTagsMap.keys())
-
-  const tagsHTML = tags
-    .map(
-      (tag) =>
-        `<article class="filter-item" data-relevance=${
-          memeTagsMap.get(tag).length
-        }><p>${tag}</p></article>`
-    )
-    .join('')
-
-  document.querySelector('.filter-items').innerHTML = tagsHTML
-
-  const elImages = [...document.querySelectorAll('.img-item')]
-
-  elImages.forEach((elImg) =>
-    elImg.addEventListener('click', () => editMeme(elImg.dataset.id))
-  )
+  _renderMemeTemplates()
+  _renderTags()
+  _updateDataList()
 }
 
 function onRenderProjects() {
+  document.querySelector('.filter-items').innerHTML = ''
+
   const memeProjectsHTML = loadFromStorage('memes')
     .map(
       ({ meta: { idx, name, memePreview } }) => `<img
@@ -75,15 +55,66 @@ function onRenderProjects() {
     .join('')
   document.querySelector('.image-gallery').innerHTML = memeProjectsHTML
 
-  const elImages = [...document.querySelectorAll('.img-item')]
-
-  elImages.forEach((elImg) =>
-    elImg.addEventListener('click', () => editProject(elImg.dataset.id))
-  )
+  _addMemeTemplateCb(editProject)
 }
 
 function editProject(memeIdx) {
   initMemeEditor({ memeIdx })
   document.querySelector('.meme-editor').classList.remove('d-none')
   memeSetup()
+}
+
+function _renderMemeTemplates(filterBy = '') {
+  const memeTemplates = getMemeTemplates({ filterBy })
+  const memeTemplateImagesHTML = memeTemplates
+    .map(
+      ({ id, path }) => `<img
+          class="img-item"
+          src="images/meme-templates/${path}"
+          data-id="${id}" />`
+    )
+    .join('')
+  document.querySelector('.image-gallery').innerHTML = memeTemplateImagesHTML
+
+  _addMemeTemplateCb(editMeme)
+}
+
+function _renderTags() {
+  const tags = getMemeTags()
+
+  const tagsHTML = tags
+    .map(
+      (tag) =>
+        `<article class="filter-item" data-relevance=${
+          getMemeTemplatesForTag(tag).length
+        }><p>${tag}</p></article>`
+    )
+    .join('')
+
+  document.querySelector('.filter-items').innerHTML = tagsHTML
+  ;[...document.querySelectorAll('.filter-item')].forEach((elItem) =>
+    elItem.addEventListener('click', () => onFilterSelect(elItem))
+  )
+}
+
+function _updateDataList() {
+  const tags = getMemeTags()
+
+  const datalistHTML = tags.map(
+    (tag) => `
+  <option value="${tag}" label="${
+      getMemeTemplatesForTag(tag).length
+    }">${tag}</option>
+  `
+  )
+
+  document.querySelector('#tags').innerHTML = datalistHTML
+}
+
+function _addMemeTemplateCb(cb) {
+  const elImages = [...document.querySelectorAll('.img-item')]
+
+  elImages.forEach((elImg) =>
+    elImg.addEventListener('click', () => cb(elImg.dataset.id))
+  )
 }

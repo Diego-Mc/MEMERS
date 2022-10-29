@@ -13,6 +13,7 @@ const gCtxs = {
 }
 
 window.addEventListener('load', onMemeInit)
+window.addEventListener('resize', renderMeme)
 
 // ********************************* MEME ************************************
 
@@ -58,7 +59,6 @@ function _addEventListeners() {
 
 function renderMeme() {
   const canvases = Object.values(gElCanvases)
-  const canvasContainer = canvases[0].parentNode
   const elImg = new Image()
 
   elImg.onload = () => {
@@ -66,7 +66,6 @@ function renderMeme() {
     const { width, height } = _getAspectCanvasSize(imgWidth / imgHeight)
 
     canvases.forEach((canvas) => setCanvasSize(canvas, width, height))
-    setElementSize(canvasContainer, width, height)
     gCtxs.meme.drawImage(elImg, 0, 0, width, height)
 
     updateTextLines()
@@ -86,11 +85,16 @@ function onSaveMeme() {
 function _getAspectCanvasSize(ratio) {
   const canvasContainer = gElCanvases.meme.parentNode
 
-  const { clientHeight: cHeight, clientWidth: cWidth } = canvasContainer
+  const { clientHeight, clientWidth } = canvasContainer
 
-  const isWide = window.getComputedStyle(canvasContainer).width === '100%'
-  const width = parseInt(isWide ? cWidth : ratio * cHeight)
-  const height = parseInt(isWide ? ratio * cWidth : cHeight)
+  const cHeight = parseInt(clientHeight)
+  const cWidth = parseInt(clientWidth)
+
+  const ratioWidth = parseInt(cHeight * ratio)
+  const ratioHeight = parseInt(cWidth / ratio)
+
+  const width = ratioWidth > cWidth ? cWidth : ratioWidth
+  const height = ratioHeight > cHeight ? cHeight : ratioHeight
 
   return { width, height }
 }

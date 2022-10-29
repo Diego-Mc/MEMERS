@@ -16,11 +16,11 @@ let gMeme = {
 
 function initMemeEditor(data) {
   console.log(data)
-  const { imgId, memeIdx } = data
+  const { imgId = getRandImgId(), memeIdx = generateMemeIdx() } = data
   const meme = {
     meta: {
-      imgId: imgId || getRandImgId(),
-      idx: generateMemeIdx(),
+      imgId: imgId,
+      idx: memeIdx,
       name: '',
     },
     selectedLineIdx: -1,

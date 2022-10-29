@@ -25,7 +25,11 @@ function calcLineHeight(ctx, txt, { size, font }) {
 }
 
 function addEventHandler(type) {
-  return (query, cb) => document.querySelector(query).addEventListener(type, cb)
+  return (queryOrDomEl, cb) => {
+    if (typeof queryOrDomEl === 'string') {
+      document.querySelector(queryOrDomEl).addEventListener(type, cb)
+    } else queryOrDomEl.addEventListener(type, cb)
+  }
 }
 
 function printText(ctx, text, x, y) {

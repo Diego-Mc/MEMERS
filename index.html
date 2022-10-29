@@ -29,7 +29,7 @@
     <title>Meme Generator</title>
   </head>
   <body>
-    <section class="meme-editor">
+    <section class="meme-editor d-none">
       <button
         class="close-btn"
         onclick="this.parentElement.classList.toggle('d-none')">
@@ -91,13 +91,14 @@
             <i class="bi bi-dash-lg font-decrease"></i>
             <i class="bi bi-plus-lg font-increase"></i>
           </div>
+          <button class="text-color mobile-only">
+            <label for="text-outline">
+              <input type="color" name="" id="text-outline" />
+            </label>
+          </button>
           <button class="text-color">
             <label for="text-outline">
-              <input
-                type="color"
-                name=""
-                id="text-outline"
-                oninput="this.parentElement.style.borderColor = this.value" />
+              <input type="color" name="" id="text-outline" />
             </label>
             <label for="text-fill">
               <input type="color" name="" id="text-fill" />
@@ -147,7 +148,7 @@
     </section>
 
     <header class="main-header">
-      <div class="header-wrapper">
+      <div class="wrapper">
         <h1 class="logo">MEMERS</h1>
         <nav class="main-nav">
           <ul>
@@ -159,10 +160,13 @@
       </div>
     </header>
     <main class="gallery">
-      <section class="filter">
-        <header class="searchbar">
-          <input type="text" list="" />
-          <i class="bi bi-search"></i>
+      <section class="filter wrapper">
+        <header class="filter-header">
+          <i class="bi bi-shuffle flexible-btn" title="I'm flexible!"></i>
+          <div class="searchbar">
+            <input type="text" list="tags" />
+            <i class="bi bi-search"></i>
+          </div>
         </header>
 
         <main class="filter-items">
@@ -177,6 +181,8 @@
           data-id="1" /> -->
       </section>
     </main>
+
+    <datalist id="tags"></datalist>
 
     <script src="js/services/utils.service.js"></script>
     <script src="js/services/storage.service.js"></script>

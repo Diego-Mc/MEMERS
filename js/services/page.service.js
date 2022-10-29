@@ -77,10 +77,19 @@ function getRandImgId() {
   return gMemeTemplates[getRandomInt(0, gMemeTemplates.length)].id
 }
 
-function getMemeTemplates() {
-  return gMemeTemplates
+function getMemeTemplates({ filterBy }) {
+  return [
+    ...getMemeTags()
+      .filter((tag) => tag.includes(filterBy))
+      .map(getMemeTemplatesForTag)
+      .reduce((set, templates) => new Set([...set, ...templates]), new Set()),
+  ]
 }
 
-function getMemeTagsMap() {
-  return gMemeTagsMap
+function getMemeTags() {
+  return Array.from(gMemeTagsMap.keys())
+}
+
+function getMemeTemplatesForTag(tag) {
+  return gMemeTagsMap.get(tag)
 }
