@@ -5,28 +5,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/main.css" />
+    <link
+      rel="preload"
+      as="font"
+      href="fonts/Rubik-Black.ttf"
+      crossorigin="anonymous" />
+    <link
+      rel="preload"
+      as="font"
+      href="fonts/Montserrat-Black.ttf"
+      crossorigin="anonymous" />
+    <link
+      rel="preload"
+      as="font"
+      href="fonts/impact.ttf"
+      crossorigin="anonymous" />
+    <link
+      rel="preload"
+      as="font"
+      href="fonts/SecularOne-Regular.ttf"
+      crossorigin="anonymous" />
+
     <title>Meme Generator</title>
   </head>
   <body>
     <section class="meme-editor">
       <button
         class="close-btn"
-        onclick="this.parentElement.classList.toggle('d-none')"
-      >
+        onclick="this.parentElement.classList.toggle('d-none')">
         <i class="bi bi-x-lg"></i>
       </button>
       <div class="editor-wrapper">
         <section class="proj-name">
           <input type="text" placeholder="Untitled Meme Project..." />
+          <i class="bi bi-cloud-arrow-down-fill save-meme"></i>
+          <i class="bi bi-cloud-check-fill d-none"></i>
         </section>
         <section class="share">
           <div class="btn-group">
-            <a class="meme-download" download="meme" href="">
-              <i class="bi bi-download"></i>
-            </a>
+            <i class="bi bi-download">
+              <a class="bi meme-download" download="meme" href=""> </a
+            ></i>
             <i class="bi bi-facebook"></i>
             <i class="bi bi-whatsapp"></i>
-            <i class="bi bi-cloud-arrow-up-fill"></i>
+            <i class="bi bi-share-fill"></i>
           </div>
         </section>
         <aside class="tools">
@@ -34,11 +56,11 @@
             class="text-line"
             type="text"
             value=""
-            placeholder="Add text here..."
-          />
+            placeholder="Add text here..." />
           <div class="btn-group text-switch">
             <i class="bi bi-arrow-up text-up"></i>
             <i class="bi bi-arrow-down text-down"></i>
+            <i class="bi bi-arrow-down-up"></i>
           </div>
           <button class="trash">
             <i class="bi bi-trash-fill"></i>
@@ -59,6 +81,7 @@
                 <li class="dropdown-item" name="montserrat">Montserrat</li>
               </ul>
             </span>
+            <i class="bi bi-caret-down-fill caret-down"></i>
           </div>
           <div class="btn-group text-size">
             <span class="btn-i">
@@ -74,8 +97,7 @@
                 type="color"
                 name=""
                 id="text-outline"
-                oninput="this.parentElement.style.borderColor = this.value"
-              />
+                oninput="this.parentElement.style.borderColor = this.value" />
             </label>
             <label for="text-fill">
               <input type="color" name="" id="text-fill" />
@@ -86,6 +108,9 @@
             <i class="bi bi-text-center text-center"></i>
             <i class="bi bi-text-right text-right"></i>
           </div>
+          <button class="emoji-btn">
+            <i class="bi bi-emoji-sunglasses-fill"></i>
+          </button>
           <div class="btn-group emoji">
             <span>😂</span>
             <span>🤠</span>
@@ -106,8 +131,7 @@
                 type="color"
                 name=""
                 id="draw-fill"
-                oninput="this.parentElement.style.backgroundColor = this.value"
-              />
+                oninput="this.parentElement.style.backgroundColor = this.value" />
             </label>
           </button>
           <button class="draw-width">
@@ -127,86 +151,38 @@
         <h1 class="logo">MEMERS</h1>
         <nav class="main-nav">
           <ul>
-            <li><a href="#">Gallery</a></li>
-            <li><a href="#">Projects</a></li>
-            <li><a href="#">About</a></li>
+            <li><a class="gallery-link" href="#">Gallery</a></li>
+            <li><a class="projects-link" href="#">Projects</a></li>
+            <li><a class="about-link" href="#">About</a></li>
           </ul>
         </nav>
       </div>
     </header>
     <main class="gallery">
       <section class="filter">
-        <div class="searchbar">
+        <header class="searchbar">
           <input type="text" list="" />
           <i class="bi bi-search"></i>
-        </div>
-        <article class="filter-item"><p>Funny</p></article>
-        <article class="filter-item"><p>Dog</p></article>
-        <article class="filter-item"><p>Spiderman</p></article>
+        </header>
+
+        <main class="filter-items">
+          <!-- <article class="filter-item"><p>Funny</p></article> -->
+        </main>
       </section>
       <section class="image-gallery">
-        <img
+        <!-- <img
           class="img-item large"
           src="images/meme-templates/01.jpg"
           alt=""
-          data-id="1"
-        />
-        <img
-          class="img-item"
-          src="images/meme-templates/02.jpg"
-          alt=""
-          data-id="2"
-        />
-        <img
-          class="img-item"
-          src="images/meme-templates/03.jpg"
-          alt=""
-          data-id="3"
-        />
-        <img
-          class="img-item large"
-          src="images/meme-templates/04.jpg"
-          alt=""
-          data-id="4"
-        />
-        <img
-          class="img-item"
-          src="images/meme-templates/05.jpg"
-          alt=""
-          data-id="5"
-        />
-        <img
-          class="img-item"
-          src="images/meme-templates/06.jpg"
-          alt=""
-          data-id="6"
-        />
-        <img
-          class="img-item"
-          src="images/meme-templates/07.jpg"
-          alt=""
-          data-id="7"
-        />
-        <img
-          class="img-item"
-          src="images/meme-templates/08.jpg"
-          alt=""
-          data-id="8"
-        />
-        <img
-          class="img-item large"
-          src="images/meme-templates/09.jpg"
-          alt=""
-          data-id="9"
-        />
+          data-id="1" /> -->
       </section>
     </main>
 
     <script src="js/services/utils.service.js"></script>
     <script src="js/services/storage.service.js"></script>
-    <script src="js/services/gallery.service.js"></script>
+    <script src="js/services/page.service.js"></script>
     <script src="js/services/meme.service.js"></script>
-    <script src="js/controllers/gallery.controller.js"></script>
+    <script src="js/controllers/page.controller.js"></script>
     <script src="js/controllers/meme.controller.js"></script>
   </body>
 </html>

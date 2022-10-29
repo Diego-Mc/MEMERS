@@ -55,3 +55,7 @@ function setCtxPrefs(ctx, options) {
   if (lineDash) ctx.setLineDash(lineDash)
   if (lineCap) ctx.lineCap = lineCap
 }
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min) + min)
+}

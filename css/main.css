@@ -3,28 +3,50 @@
 
 @font-face {
   font-family: Handjet;
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+000-5FF;
   src: url('../fonts/Handjet.woff2') format('woff2 supports variations'),
     url('../fonts/Handjet.woff2') format('woff2-variations');
-  font-weight: 400 900;
+
   /* reg 400 bold 700 black 900 */
 }
 
 /* TODO: meme fonts */
 @font-face {
-  font-family: Impact;
-  src: url('../fonts/impact.ttf');
+  font-family: 'Impact';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+000-5FF;
+  src: local('Rubik'), url('../fonts/impact.ttf') format('truetype');
 }
 @font-face {
-  font-family: Montserrat;
-  src: url('../fonts/Montserrat-Black.ttf');
+  font-family: 'Rubik';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+000-5FF;
+  src: local('Rubik'), url('../fonts/Rubik-Black.ttf') format('truetype');
 }
 @font-face {
-  font-family: Rubik;
-  src: url('../fonts/Rubik-Black.ttf');
+  font-family: 'Montserrat';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+000-5FF;
+  src: local('Montserrat'),
+    url('../fonts/Montserrat-Black.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Secular One';
-  src: url('../fonts/SecularOne-Regular.ttf');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+000-5FF;
+  src: local('Secular One'),
+    url('../fonts/SecularOne-Regular.ttf') format('truetype');
 }
 
 /* BASICS */
@@ -284,8 +306,8 @@ button.disabled,
 
 .meme-editor .editor-wrapper {
   display: grid;
-  grid-template: 2.83em 25em / 1fr 10.83em max-content;
-  grid-template-areas: 'proj-name share tools' 'canvas canvas tools';
+  grid-template: 2.83em 7.5em calc(100vh - 10.33em - 40px - 6rem) / 1fr 10.83em;
+  grid-template-areas: 'proj-name share' 'tools tools' 'canvas canvas';
   width: max-content;
   margin-inline: auto;
   gap: 20px;
@@ -299,27 +321,65 @@ button.disabled,
 .meme-editor .proj-name {
   grid-area: proj-name;
 }
-.meme-editor .share {
+
+/** proj-name **/
+/* .proj-name {
+  position: relative;
+}
+
+.proj-name .bi {
+  position: absolute;
+  inset: 0;
+} */
+
+.proj-name {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.proj-name .bi {
+  position: absolute;
+  inset-inline-end: 0.66em;
+  cursor: pointer;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.proj-name .bi:hover {
+  color: var(--highlight);
+}
+
+.proj-name .meme-editor .share {
   grid-area: share;
 }
+
 .meme-editor .canvas {
   grid-area: canvas;
+  height: 100%;
 }
+
+.meme-editor .canvas > canvas {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .meme-editor .tools {
   grid-area: tools;
   display: grid;
-  grid-template: repeat(8, 2.67em) / repeat(4, 2.67em);
+  grid-template: repeat(2, 2.67em) / repeat(4, 2.67em) 1fr repeat(4, 2.67em) 1fr repeat(
+      2,
+      2.67em
+    );
   column-gap: 15px;
   align-content: space-between;
   grid-template-areas:
-    'text text text text'
-    'text-switch text-switch trash text-add'
-    'text-font text-font text-font text-font'
-    'text-size text-size text-size text-size'
-    'text-color text-align text-align text-align'
-    'emoji emoji emoji emoji'
-    'emoji emoji emoji emoji'
-    'draw-tools draw-tools draw-color draw-width';
+    'text text text text . text-size text-size text-size text-size . draw-tools draw-tools'
+    'text-switch trash text-add emoji . text-font text-font text-color text-align . draw-color draw-width';
   padding: 20px;
   height: 100%;
 }
@@ -332,6 +392,12 @@ button.disabled,
 .tools .text-switch {
   grid-area: text-switch;
 }
+
+/** text-switch **/
+.tools .text-switch > *:not(.bi-arrow-down-up) {
+  display: none;
+}
+
 .tools .trash {
   grid-area: trash;
 }
@@ -360,23 +426,20 @@ button.disabled,
   font-family: Montserrat, Rubik, sans-serif;
 }
 
-.text-font .dropdown-container > span {
-  text-transform: capitalize;
-}
-
-.text-font .dropdown-container > span {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 9.17em;
-  overflow: hidden;
-}
-
 .text-font .dropdown-container {
   user-select: none;
 }
 
 .tools .text-size {
   grid-area: text-size;
+}
+
+.text-font .dropdown-container > span {
+  display: none;
+}
+
+.text-font .inner-input {
+  display: none;
 }
 
 /* text-size */
@@ -415,6 +478,8 @@ button.disabled,
 
 .tools .text-align {
   grid-area: text-align;
+  overflow: hidden;
+  /* TODO: add carousele effect for mobile selection */
 }
 
 /** text-align **/
@@ -423,9 +488,13 @@ button.disabled,
 }
 
 .tools .emoji {
-  grid-area: emoji;
-  flex-wrap: wrap;
+  display: none;
 }
+
+.tools .emoji-btn {
+  grid-area: emoji;
+}
+
 .tools .draw-tools {
   grid-area: draw-tools;
 }
@@ -491,6 +560,11 @@ canvas[name='canvas'] {
 }
 
 /** filter **/
+.filter {
+  display: grid;
+  color: var(--main-light);
+}
+
 /*** searchbar ***/
 .searchbar {
   position: relative;
@@ -499,6 +573,7 @@ canvas[name='canvas'] {
   align-items: center;
   justify-self: center;
   color: var(--secondary-dark);
+  margin-bottom: 3rem;
 }
 
 .searchbar input {
@@ -521,11 +596,31 @@ canvas[name='canvas'] {
 .searchbar .bi-search:hover {
   color: var(--highlight);
 }
+/*** filter-items ***/
+.filter-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
 
-/** filter **/
-.filter {
-  display: grid;
-  color: var(--main-light);
+.filter-items .filter-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: min-content;
+}
+
+.filter-items .filter-item p {
+  background-color: var(--main-light);
+  color: var(--main-dark);
+  padding: 0.5em 1em;
+  border-radius: 2em;
+  margin: 0;
+  user-select: none;
+  cursor: pointer;
 }
 
 /** image-gallery **/
@@ -546,9 +641,73 @@ canvas[name='canvas'] {
   height: 100%;
   object-fit: cover;
   border-radius: 1.4rem;
+  cursor: pointer;
 }
 
 .img-item.large {
   grid-column: span 2;
   grid-row: span 2;
+}
+
+@media screen and (min-width: 1300px) {
+  .meme-editor .editor-wrapper {
+    grid-template: 2.83em 25em / 1fr 10.83em max-content;
+    grid-template-areas: 'proj-name share tools' 'canvas canvas tools';
+  }
+
+  .meme-editor .tools {
+    grid-area: tools;
+    display: grid;
+    grid-template: repeat(8, 2.67em) / repeat(4, 2.67em);
+    column-gap: 15px;
+    align-content: space-between;
+    grid-template-areas:
+      'text text text text'
+      'text-switch text-switch trash text-add'
+      'text-font text-font text-font text-font'
+      'text-size text-size text-size text-size'
+      'text-color text-align text-align text-align'
+      'emoji emoji emoji emoji'
+      'emoji emoji emoji emoji'
+      'draw-tools draw-tools draw-color draw-width';
+    padding: 20px;
+    height: 100%;
+  }
+
+  .tools .emoji {
+    grid-area: emoji;
+    flex-wrap: wrap;
+    display: flex;
+  }
+
+  .tools .emoji-btn {
+    display: none;
+  }
+
+  .text-font .dropdown-container > span {
+    display: block;
+    text-transform: capitalize;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 9.17em;
+    overflow: hidden;
+  }
+
+  .text-font .dropdown-container .caret-down {
+    display: none;
+  }
+
+  .text-font .inner-input {
+    display: flex;
+  }
+
+  .tools .text-switch > *:not(.bi-arrow-down-up) {
+    display: flex;
+  }
+  .tools .text-switch > .bi-arrow-down-up {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 920px) {
 }
