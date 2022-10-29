@@ -56,6 +56,17 @@ const gMemeTemplates = [
 let gMemeTagsMap = new Map()
 initMemeTagsMap()
 
+let gMemeProjects
+initMemeProjects()
+
+function initMemeProjects() {
+  gMemeProjects = loadFromStorage('memes') || []
+}
+
+function getMemeProjects() {
+  return gMemeProjects
+}
+
 function initMemeTagsMap() {
   // create a map for instant search results later (& tags handling)
   gMemeTemplates.forEach((template) => {

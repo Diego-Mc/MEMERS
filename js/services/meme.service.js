@@ -125,3 +125,7 @@ function saveMeme(metaArgs) {
   memes[gMeme.meta.idx] = gMeme
   saveToStorage('memes', memes)
 }
+
+function getMemeMeta() {
+  return gMeme.meta
+}

@@ -63,3 +63,17 @@ function setCtxPrefs(ctx, options) {
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min)
 }
+
+function addShareListener(elTarget, data) {
+  //from MDN
+  // const shareData = { title, text, url }
+
+  // Share must be triggered by "user activation"
+  elTarget.addEventListener('click', async () => {
+    try {
+      await navigator.share(data)
+    } catch (err) {
+      console.log('unable to share :(')
+    }
+  })
+}

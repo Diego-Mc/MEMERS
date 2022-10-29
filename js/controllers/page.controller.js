@@ -44,7 +44,7 @@ function onRenderGallery() {
 function onRenderProjects() {
   document.querySelector('.filter-items').innerHTML = ''
 
-  const memeProjectsHTML = loadFromStorage('memes')
+  const memeProjectsHTML = getMemeProjects()
     .map(
       ({ meta: { idx, name, memePreview } }) => `<img
           class="img-item meme-preview"

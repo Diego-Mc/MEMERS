@@ -49,12 +49,26 @@ function _addEventListeners() {
   onClick('.text-right', () => onAlignText('right'))
   onInput('#text-fill', onFillText)
   onInput('#text-outline', onOutlineText)
+  Array.from(document.querySelectorAll('.emoji span')).forEach((emoji) =>
+    onClick(emoji, () => onAddEmoji(emoji))
+  )
 
   // SOCIAL:
   onClick('.bi-download', downloadMeme)
+  _addShareEventListener(document.querySelector('.bi-share-fill'))
 
   // SAVE MEME:
   onClick('.save-meme', onSaveMeme)
+}
+
+function onAddEmoji({ innerText: emoji }) {
+  const { width, height } = gElCanvases.meme
+  const { size } = getUserPrefs()
+  addLine(width / 2, height / 2, size)
+  updatePrefs({ text: emoji })
+  updateTools('text')
+  updateTextLines()
+  updateSelectionCanvas()
 }
 
 function renderMeme() {
@@ -70,10 +84,17 @@ function renderMeme() {
 
     updateTextLines()
     updateSelectionCanvas()
+    _renderMemeName()
   }
 
   const imgId = getImgId()
   elImg.src = `images/meme-templates/${getImgPath(imgId)}`
+}
+
+function _renderMemeName() {
+  console.log('GEEG')
+  const { name: memeName = '' } = getMemeMeta()
+  document.querySelector('.proj-name input').value = memeName
 }
 
 function onSaveMeme() {
@@ -104,10 +125,17 @@ function _clearMemeCanvas() {
 }
 
 function downloadMeme() {
-  const imgSrc = getCanvasAsImgSrc
+  const imgSrc = getCanvasAsImgSrc()
   const elImageLink = document.querySelector('.meme-download')
   elImageLink.href = imgSrc
   elImageLink.click()
+}
+
+function _addShareEventListener(el) {
+  const { name: memeName } = getMemeMeta()
+  const url = getCanvasAsImgSrc()
+  const data = { title: 'Memers', text: memeName, url }
+  addShareListener(el, data)
 }
 
 function getCanvasAsImgSrc() {
