@@ -36,6 +36,7 @@ function _addEventListeners() {
   onClick('.text-add', onAddText)
   onClick('.text-switch .text-up', () => onSelectedLineChange(+1))
   onClick('.text-switch .text-down', () => onSelectedLineChange(-1))
+  onClick('.text-switch .text-up-down', () => onSelectedLineChange(+1))
   onInput('.text-line', onSetText)
   onClick('.trash', onRemoveLine)
   onClick('.dropdown-item[name=impact]', () => onSetFont('Impact'))
@@ -44,9 +45,10 @@ function _addEventListeners() {
   onClick('.dropdown-item[name=montserrat]', () => onSetFont('Montserrat'))
   onClick('.font-decrease', () => onSetFontSize(-1))
   onClick('.font-increase', () => onSetFontSize(+1))
-  onClick('.text-left', () => onAlignText('left'))
-  onClick('.text-center', () => onAlignText('center'))
-  onClick('.text-right', () => onAlignText('right'))
+  onClick('.text-left', (ev) => onAlignText(ev, 'left'))
+  onClick('.text-center', (ev) => onAlignText(ev, 'center'))
+  onClick('.text-right', (ev) => onAlignText(ev, 'right'))
+  onClick('.text-align', (ev) => onAlignText(ev))
   onInput('#text-fill', onFillText)
   onInput('#text-outline', onOutlineText)
   Array.from(document.querySelectorAll('.emoji span')).forEach((emoji) =>
@@ -134,6 +136,7 @@ function onDownloadMeme() {
 function onShare() {
   const { name: memeName } = getMemeMeta()
   const data = getCanvasAsImgSrc()
+  memeName = memeName || 'Untitled meme'
   shareCanvas(data, memeName)
 }
 
@@ -176,7 +179,9 @@ function updateTools(toolName = undefined) {
     },
     // Font
     font: () => {
-      const elSelectedFont = document.querySelector('.dropdown-container>span')
+      const elSelectedFont = document.querySelector(
+        '.dropdown-container .inner-input'
+      )
       elSelectedFont.setAttribute('name', font.toLowerCase())
       elSelectedFont.innerText = font
     },
@@ -256,7 +261,17 @@ function onAddText() {
   updateSelectionCanvas()
 }
 
-function onAlignText(alignment) {
+function onAlignText(ev, alignment) {
+  ev.stopPropagation()
+  if (!alignment) {
+    const { align: currAlignment } = getUserPrefs()
+    alignment =
+      currAlignment === 'center'
+        ? 'right'
+        : currAlignment === 'right'
+        ? 'left'
+        : 'center'
+  }
   updatePrefs({ align: alignment })
   updateTools('align')
   updateTextLines()

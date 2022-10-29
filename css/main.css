@@ -104,6 +104,10 @@ h1 {
   font-size: 1.75em;
 }
 
+.logo {
+  letter-spacing: 0.1em;
+}
+
 input[type='text'] {
   appearance: none;
   border: none;
@@ -231,12 +235,14 @@ button.disabled,
 
 .dropdown-menu {
   position: absolute;
+  width: 150%;
+  padding: 0;
+  height: fit-content;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   top: 100%;
   opacity: 0;
-  inset-inline: 0;
   background-color: var(--main-light);
   border-radius: 1.25rem;
   box-shadow: var(--btn-shadow), var(--btn-shadow-inset);
@@ -272,6 +278,10 @@ button.disabled,
   justify-content: center;
   align-items: center;
   padding-block: 24px;
+  width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-inline: 120px;
 }
 
 .dropdown-item:hover {
@@ -465,6 +475,10 @@ button.disabled,
 }
 
 .text-font .inner-input {
+  display: none;
+}
+
+.text-font.dropdown-container .caret-down {
   display: none;
 }
 
@@ -687,6 +701,23 @@ canvas[name='canvas'] {
   grid-row: span 2;
 }
 
+@media screen and (max-width: 920px) {
+  .dropdown-menu {
+    bottom: 100%;
+    top: auto;
+  }
+  .dropdown-container.on:hover::before,
+  .dropdown-container.on.selected::before {
+    bottom: 100%;
+    top: auto;
+  }
+
+  .dropdown-container.on:hover .dropdown-menu,
+  .dropdown-container.on.selected .dropdown-menu {
+    bottom: 120%;
+    top: auto;
+  }
+}
 @media screen and (min-width: 920px) {
   .text-color.mobile-only {
     display: none;
@@ -724,9 +755,44 @@ canvas[name='canvas'] {
   .tools .text-line {
     display: flex;
   }
-}
+  .text-font.dropdown-container .caret-up {
+    display: none;
+  }
 
+  .text-font.dropdown-container .caret-down {
+    display: flex;
+  }
+}
+@media screen and (max-width: 1300px) {
+  .text-align:has(.text-left.selected) > * {
+    transform: translateX(64px);
+  }
+  .text-align:has(.text-center.selected) > * {
+    transform: translateX(0);
+  }
+  .text-align:has(.text-right.selected) > * {
+    transform: translateX(-64px);
+  }
+  .text-align {
+    pointer-events: all;
+    cursor: pointer;
+  }
+  .text-align > * {
+    pointer-events: none;
+  }
+}
 @media screen and (min-width: 1300px) {
+  .dropdown-menu {
+    width: 100%;
+  }
+  .text-align {
+    pointer-events: none;
+    cursor: auto;
+  }
+  .text-align > * {
+    pointer-events: all;
+  }
+
   .meme-editor {
     background-color: var(--placeholder);
   }
@@ -768,17 +834,12 @@ canvas[name='canvas'] {
     display: none;
   }
 
-  .text-font .dropdown-container > span {
-    display: block;
+  .text-font.dropdown-container > .inner-input {
     text-transform: capitalize;
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 9.17em;
     overflow: hidden;
-  }
-
-  .text-font .dropdown-container .caret-down {
-    display: none;
   }
 
   .text-font .inner-input {

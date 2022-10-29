@@ -92,9 +92,12 @@ function _renderTags() {
     .join('')
 
   document.querySelector('.filter-items').innerHTML = tagsHTML
-  ;[...document.querySelectorAll('.filter-item')].forEach((elItem) =>
-    elItem.addEventListener('click', () => onFilterSelect(elItem))
+  const elTags = Array.from(document.querySelectorAll('.filter-item'))
+
+  elTags.forEach((elTag) =>
+    elTag.addEventListener('click', () => onFilterSelect(elTag))
   )
+  elTags.forEach((elTag) => growTag(elTag, elTag.dataset.relevance))
 }
 
 function _updateDataList() {

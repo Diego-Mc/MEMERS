@@ -8,6 +8,11 @@
     <link
       rel="preload"
       as="font"
+      href="fonts/Handjet.woff2"
+      crossorigin="anonymous" />
+    <link
+      rel="preload"
+      as="font"
       href="fonts/Rubik-Black.ttf"
       crossorigin="anonymous" />
     <link
@@ -60,7 +65,7 @@
           <div class="btn-group text-switch">
             <i class="bi bi-arrow-up text-up"></i>
             <i class="bi bi-arrow-down text-down"></i>
-            <i class="bi bi-arrow-down-up"></i>
+            <i class="bi bi-arrow-down-up text-up-down"></i>
           </div>
           <button class="trash">
             <i class="bi bi-trash-fill"></i>
@@ -68,20 +73,22 @@
           <button class="text-add">
             <i class="bi bi-plus-circle-fill"></i>
           </button>
-          <div class="btn-group text-font">
+          <div class="btn-group dropdown-container on text-font">
             <span class="btn-i">
               <i class="bi bi-fonts"></i>
             </span>
-            <span class="inner-input dropdown-container on">
+            <span class="inner-input">
               <span name="impact">Impact</span>
-              <ul class="dropdown-menu">
-                <li class="dropdown-item" name="impact">Impact</li>
-                <li class="dropdown-item" name="secular one">Secular One</li>
-                <li class="dropdown-item" name="rubik">Rubik</li>
-                <li class="dropdown-item" name="montserrat">Montserrat</li>
-              </ul>
             </span>
+
             <i class="bi bi-caret-down-fill caret-down"></i>
+            <i class="bi bi-caret-up-fill caret-up"></i>
+            <ul class="dropdown-menu">
+              <li class="dropdown-item" name="impact">Impact</li>
+              <li class="dropdown-item" name="secular one">Secular One</li>
+              <li class="dropdown-item" name="rubik">Rubik</li>
+              <li class="dropdown-item" name="montserrat">Montserrat</li>
+            </ul>
           </div>
           <div class="btn-group text-size">
             <span class="btn-i">
