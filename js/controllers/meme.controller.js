@@ -54,8 +54,8 @@ function _addEventListeners() {
   )
 
   // SOCIAL:
-  onClick('.bi-download', downloadMeme)
-  _addShareEventListener(document.querySelector('.bi-share-fill'))
+  onClick('.bi-download', onDownloadMeme)
+  onClick('.bi-share-fill', onShare)
 
   // SAVE MEME:
   onClick('.save-meme', onSaveMeme)
@@ -124,18 +124,17 @@ function _clearMemeCanvas() {
   clearCanvas(gElCanvases.meme, gCtxs.meme)
 }
 
-function downloadMeme() {
+function onDownloadMeme() {
   const imgSrc = getCanvasAsImgSrc()
   const elImageLink = document.querySelector('.meme-download')
   elImageLink.href = imgSrc
   elImageLink.click()
 }
 
-function _addShareEventListener(el) {
+function onShare() {
   const { name: memeName } = getMemeMeta()
-  const url = getCanvasAsImgSrc()
-  const data = { title: 'Memers', text: memeName, url }
-  addShareListener(el, data)
+  const data = getCanvasAsImgSrc()
+  shareCanvas(data, memeName)
 }
 
 function getCanvasAsImgSrc() {
