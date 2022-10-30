@@ -337,7 +337,7 @@ button.disabled,
   gap: 20px;
 }
 
-.meme-editor .editor-wrapper > * {
+.meme-editor .editor-wrapper > *:not(.canvas) {
   background-color: var(--main-light);
   border-radius: 1.25rem;
 }
@@ -799,7 +799,7 @@ canvas[name='canvas'] {
   }
 
   .meme-editor {
-    background-color: var(--placeholder);
+    background-color: #5b5b5bbb;
   }
 
   .meme-editor .editor-wrapper {
