@@ -719,6 +719,7 @@ canvas[name='canvas'] {
   justify-content: center;
   gap: 1.2rem;
   margin-bottom: 2rem;
+  width: 100vw;
 }
 
 .filter-items .filter-item {
@@ -742,13 +743,21 @@ canvas[name='canvas'] {
 .image-gallery {
   margin: 1rem;
   display: grid;
+
+  grid-template:
+    repeat(auto-fill, 300px) /
+    minmax(300px, 1fr);
+  aspect-ratio: 1/1;
+  grid-auto-flow: dense;
+  gap: 1rem;
+}
+
+.image-gallery:has(.meme-project-card) {
   grid-template: repeat(auto-fill, minmax(300px, 1fr)) / repeat(
       auto-fill,
       minmax(300px, 1fr)
     );
-  /* aspect-ratio: 1/1; */
-  grid-auto-flow: dense;
-  gap: 1rem;
+  aspect-ratio: unset;
 }
 
 .img-item {
@@ -759,15 +768,53 @@ canvas[name='canvas'] {
   cursor: pointer;
 }
 
-.img-item.horizontal {
+.image-gallery .horizontal {
   grid-column: span 2;
 }
-.img-item.vertical {
+.image-gallery .vertical {
   grid-row: span 2;
+}
+
+/* user msg (modal) */
+.user-msg {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.15s cubic-bezier(0, 0.45, 1, 0.56);
+}
+
+.user-msg p {
+  padding: 3rem 8rem;
+  background-color: var(--highlight-selection);
+  border-radius: 1.25rem;
+  box-shadow: var(--btn-shadow);
+  font-size: 2rem;
+}
+
+/* FOOTER */
+footer {
+  max-height: 200px;
+  background-color: var(--main-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
 }
 
 /* above mobile */
 @media screen and (min-width: 820px) {
+  .image-gallery {
+    grid-template: repeat(auto-fill, 300px) / repeat(
+        auto-fill,
+        minmax(300px, 1fr)
+      );
+  }
+
   .meme-editor .editor-wrapper {
     grid-template: 2.83em 1fr max-content / 2.83em 1fr 10.83em;
     grid-template-areas: 'close-btn proj-name share' 'canvas canvas canvas' 'tools tools tools';
@@ -868,6 +915,10 @@ canvas[name='canvas'] {
     display: none;
   }
 
+  .tools .text-size .inner-input {
+    display: flex;
+  }
+
   .dropdown-menu {
     bottom: auto;
     top: 100%;
@@ -899,6 +950,8 @@ canvas[name='canvas'] {
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 .meme-project-card p {
   text-align: center;

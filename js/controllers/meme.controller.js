@@ -108,6 +108,20 @@ function onSaveMeme() {
   name = name || 'Untitled meme project'
   const memePreview = getCanvasAsImgSrc()
   saveMeme({ name, memePreview })
+
+  const userMsg = `Meme saved with title: ${name}`
+  _showUserMsg(userMsg)
+}
+
+function _showUserMsg(msg) {
+  const elMsgContainer = document.querySelector('.user-msg')
+  const elMsgText = elMsgContainer.querySelector('p')
+
+  elMsgText.innerText = msg
+  elMsgContainer.classList.remove('d-none')
+  setTimeout(() => {
+    elMsgContainer.classList.add('d-none')
+  }, 2000)
 }
 
 function _getAspectCanvasSize(ratio) {

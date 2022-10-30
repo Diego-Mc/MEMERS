@@ -4,16 +4,13 @@ window.addEventListener('load', onInitGallery)
 
 function onInitGallery() {
   const onClick = addEventHandler('click')
-  const onInput = addEventHandler('input')
 
   onRenderGallery()
 
   onClick('.projects-link', onRenderProjects)
   onClick('.gallery-link', onRenderGallery)
-  onInput('.searchbar input', ({ target: { value } }) =>
-    _renderMemeTemplates(value)
-  )
   onClick('.flexible-btn', () => editMeme(getRandImgId()))
+  onClick('.logo', onRenderGallery)
 }
 
 function onFilterSelect(el) {
@@ -39,20 +36,34 @@ function onRenderGallery() {
   _renderMemeTemplates()
   _renderTags()
   _updateDataList()
+  _clearSearch()
+  _setSearchEvent(_renderMemeTemplates)
+}
+
+function _clearSearch() {
+  document.querySelector('.searchbar input').value = ''
+}
+
+function _setSearchEvent(cb) {
+  document.querySelector('.searchbar input').oninput = ({
+    target: { value },
+  }) => cb(value)
 }
 
 function onRenderProjects() {
   document.querySelector('.filter-items').innerHTML = ''
+  _renderProjects()
+  _addMemeTemplateCb(editProject)
+  _resetDataList()
+  _clearSearch()
+  _setSearchEvent(_renderProjects)
+}
 
-  const memeProjectsHTML = getMemeProjects()
-    .map(({ meta: { idx, name, memePreview } }) => {
-      // const img = newImage()
-      // img.onload = function () {
-      //   const { naturalWidth: w, naturalHeight: h } = this
-      //   if (_isHorizontal(w / h)) this.classList.add('horizontal')
-      //   else if (_isVertical(w / h)) this.classList.add('vertical')
-      // }
-      ;`
+function _renderProjects(filterBy = '') {
+  const memeProjectsHTML = getMemeProjects({ filterBy })
+    .map(
+      ({ meta: { idx, name, memePreview } }) =>
+        `
           <article class="meme-project-card">
            <img
              class="img-item meme-preview"
@@ -61,14 +72,17 @@ function onRenderProjects() {
              data-id="${idx}" />
            <p class="project-name">${name}</p>
          </article>`
-    })
+    )
     .join('')
   document.querySelector('.image-gallery').innerHTML = memeProjectsHTML
-
-  _addMemeTemplateCb(editProject)
 }
 
-function _isHorizontal() {}
+function _isHorizontal(ratio) {
+  return ratio > 1.3
+}
+function _isVertical(ratio) {
+  return ratio < 0.7
+}
 
 function editProject(memeIdx) {
   initMemeEditor({ memeIdx })
@@ -79,12 +93,20 @@ function editProject(memeIdx) {
 function _renderMemeTemplates(filterBy = '') {
   const memeTemplates = getMemeTemplates({ filterBy })
   const memeTemplateImagesHTML = memeTemplates
-    .map(
-      ({ id, path }) => `<img
+    .map(({ id, path }) => {
+      const img = new Image()
+      img.src = `images/meme-templates/${path}`
+      img.onload = function () {
+        const { naturalWidth: w, naturalHeight: h } = this
+        const elImg = document.querySelector(`[data-id="${id}"]`)
+        if (_isHorizontal(w / h)) elImg.classList.add('horizontal')
+        else if (_isVertical(w / h)) elImg.classList.add('vertical')
+      }
+      return `<img
           class="img-item"
           src="images/meme-templates/${path}"
           data-id="${id}" />`
-    )
+    })
     .join('')
   document.querySelector('.image-gallery').innerHTML = memeTemplateImagesHTML
 
@@ -124,6 +146,10 @@ function _updateDataList() {
   )
 
   document.querySelector('#tags').innerHTML = datalistHTML
+}
+
+function _resetDataList() {
+  document.querySelector('#tags').innerHTML = ''
 }
 
 function _addMemeTemplateCb(cb) {
