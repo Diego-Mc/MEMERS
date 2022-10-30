@@ -942,7 +942,7 @@ footer {
   display: flex;
   flex-direction: column;
   aspect-ratio: 1/1;
-  border-radius: 1.25rem;
+  border-radius: 1.4rem;
   align-items: center;
   cursor: pointer;
 }
