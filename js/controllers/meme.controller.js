@@ -147,8 +147,10 @@ function _clearMemeCanvas() {
 
 function onDownloadMeme() {
   const imgSrc = getCanvasAsImgSrc()
+  const { value: memeName } = document.querySelector('.proj-name input')
   const elImageLink = document.querySelector('.meme-download')
   elImageLink.href = imgSrc
+  elImageLink.download = memeName
   elImageLink.click()
 }
 
