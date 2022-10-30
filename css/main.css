@@ -187,6 +187,7 @@ button,
   box-shadow: none;
 }
 .btn-group > .btn-i {
+  color: var(--placeholder);
   cursor: auto;
 }
 .btn-group > .inner-input {
@@ -241,7 +242,7 @@ button.disabled,
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  top: 100%;
+  bottom: 100%;
   opacity: 0;
   background-color: var(--main-light);
   border-radius: 1.25rem;
@@ -258,7 +259,7 @@ button.disabled,
 .dropdown-container.on.selected::before {
   content: '';
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   background-color: transparent;
   inset-inline: 0;
   width: 100%;
@@ -268,7 +269,7 @@ button.disabled,
 .dropdown-container.on:hover .dropdown-menu,
 .dropdown-container.on.selected .dropdown-menu {
   opacity: 1;
-  top: 120%;
+  bottom: 120%;
   max-height: 100vh;
   transform: scale(100%);
 }
@@ -307,6 +308,10 @@ button.disabled,
   padding-inline: 2rem;
 }
 
+body:has(.meme-editor:not(.d-none)) {
+  overflow: hidden;
+}
+
 /* COMPONENTS */
 
 /* editor */
@@ -320,21 +325,14 @@ button.disabled,
   opacity: 1;
 }
 
-.meme-editor .close-btn {
-  position: absolute;
-  right: 30px;
-  top: 30px;
-  border-radius: 50%;
-  padding: 1em;
-}
-
 .meme-editor .editor-wrapper {
   display: grid;
-  grid-template: min-content 1fr min-content / 1fr;
-  grid-template-areas: 'proj-name' 'canvas' 'tools';
-  height: 100%;
-  width: 100vw;
+  grid-template: 2.83em 1fr max-content / 2.83em 1fr 12.25rem;
+  grid-template-areas: 'close-btn proj-name share' 'canvas canvas canvas' 'tools tools tools';
+  height: calc(100% - 2.5rem);
+  width: 100%;
   gap: 20px;
+  margin: 1.5rem;
 }
 
 .meme-editor .editor-wrapper > *:not(.canvas) {
@@ -369,22 +367,50 @@ button.disabled,
   color: var(--highlight);
 }
 
-.proj-name .meme-editor .share {
+.meme-editor .share {
   grid-area: share;
+}
+
+.meme-editor .close-btn {
+  grid-area: close-btn;
+  width: auto;
+  height: auto;
+  padding: auto;
+}
+
+.close-btn i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.close-btn i::before {
+  transition: all 0.2s ease-in-out;
+}
+.close-btn:hover i::before {
+  background: radial-gradient(
+    circle,
+    rgba(179, 110, 204, 0.6) 20%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  padding: 0.4em;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .meme-editor .canvas {
   grid-area: canvas;
   height: 100%;
-  transform: translate(-50%, -50%);
-  top: 50%;
+  transform: translate(-50%);
   left: 50%;
+  background-color: #ffffff66;
 }
 
 .meme-editor .canvas > canvas {
-  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  top: 50%;
 }
 
 .meme-editor .tools {
@@ -394,30 +420,24 @@ button.disabled,
   gap: 15px;
   align-content: space-between;
   grid-template-areas:
-    'text-size text-size text-size text-add trash'
-    'text-font text-font text-align text-color text-outline'
-    'draw-tools draw-tools draw-color draw-width emoji';
+    'text text text text-outline text-color'
+    'text-switch trash text-add emoji text-align'
+    'text-size text-size text-size text-font text-font';
   padding: 20px;
   height: 100%;
   width: 100%;
-  justify-content: space-between;
-  justify-content: center;
+  justify-content: space-around;
+  max-width: 590px;
+  margin-inline: auto;
+}
+
+.tools .draw-color,
+.tools .draw-tools,
+.tools .draw-width {
+  display: none;
 }
 
 .tools .text-size .inner-input {
-  display: none;
-}
-
-.tools .text-color:not(.mobile-only) [for='text-outline'] {
-  display: none;
-}
-
-.tools .text-color.mobile-only {
-  grid-area: text-outline;
-}
-
-.tools .text-switch,
-.tools .text-line {
   display: none;
 }
 
@@ -431,10 +451,6 @@ button.disabled,
 }
 
 /** text-switch **/
-.tools .text-switch > *:not(.bi-arrow-down-up) {
-  display: none;
-}
-
 .tools .trash {
   grid-area: trash;
 }
@@ -444,6 +460,27 @@ button.disabled,
 .tools .text-font {
   grid-area: text-font;
   z-index: 10;
+}
+
+.tools button i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tools button i::before {
+  transition: all 0.2s ease-in-out;
+}
+.tools button:hover i::before {
+  background: radial-gradient(
+    circle,
+    rgba(179, 110, 204, 0.6) 20%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  padding: 0.4em;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /** text-font **/
@@ -463,8 +500,10 @@ button.disabled,
   font-family: Montserrat, Rubik, sans-serif;
 }
 
-.text-font .dropdown-container {
-  user-select: none;
+.text-font .dropdown-item.selected {
+  color: var(--highlight);
+  cursor: auto;
+  /* background-color: var(--highlight-selection); */
 }
 
 .tools .text-size {
@@ -477,6 +516,10 @@ button.disabled,
 
 .text-font .inner-input {
   display: none;
+}
+
+.text-font.dropdown-container .caret-up {
+  display: flex;
 }
 
 .text-font.dropdown-container .caret-down {
@@ -495,6 +538,11 @@ button.disabled,
   position: relative;
   color: #ffffff00;
 }
+.tools .text-outline {
+  grid-area: text-outline;
+  position: relative;
+  color: #ffffff00;
+}
 
 .text-color [for='text-fill'] {
   position: absolute;
@@ -504,16 +552,14 @@ button.disabled,
   cursor: pointer;
 }
 
-.text-color [for='text-outline'] {
+.text-outline [for='text-outline'] {
   position: absolute;
   inset: 0;
   border-radius: 1.25rem;
   border-color: rgb(209, 122, 122);
   border-width: 0.5rem;
   border-style: solid;
-  outline: 7px solid white;
-  outline-offset: -14px;
-  background-color: #fff;
+  background-color: transparent;
   cursor: pointer;
 }
 
@@ -524,7 +570,21 @@ button.disabled,
 }
 
 /** text-align **/
+.text-align:has(.text-left.selected) > * {
+  transform: translateX(64px);
+}
+.text-align:has(.text-center.selected) > * {
+  transform: translateX(0);
+}
+.text-align:has(.text-right.selected) > * {
+  transform: translateX(-64px);
+}
+.text-align {
+  pointer-events: all;
+  cursor: pointer;
+}
 .text-align > * {
+  pointer-events: none;
   position: relative;
 }
 
@@ -550,11 +610,13 @@ button.disabled,
 main.canvas {
   border-radius: 1.25rem;
   position: relative;
+  /* background-color: var(--main-light); */
 }
 
 main.canvas > * {
   border-radius: 1.25rem;
   position: absolute;
+  box-shadow: var(--btn-shadow);
 }
 
 canvas[name='canvas-selection'] {
@@ -684,7 +746,7 @@ canvas[name='canvas'] {
       auto-fill,
       minmax(300px, 1fr)
     );
-  aspect-ratio: 1/1;
+  /* aspect-ratio: 1/1; */
   grid-auto-flow: dense;
   gap: 1rem;
 }
@@ -697,105 +759,50 @@ canvas[name='canvas'] {
   cursor: pointer;
 }
 
-.img-item.large {
+.img-item.horizontal {
   grid-column: span 2;
+}
+.img-item.vertical {
   grid-row: span 2;
 }
 
-/* mobile only */
-@media screen and (max-width: 920px) {
-  .dropdown-menu {
-    bottom: 100%;
-    top: auto;
-  }
-  .dropdown-container.on:hover::before,
-  .dropdown-container.on.selected::before {
-    bottom: 100%;
-    top: auto;
-  }
-
-  .dropdown-container.on:hover .dropdown-menu,
-  .dropdown-container.on.selected .dropdown-menu {
-    bottom: 120%;
-    top: auto;
-  }
-}
 /* above mobile */
-@media screen and (min-width: 920px) {
-  .text-color.mobile-only {
-    display: none;
-  }
+@media screen and (min-width: 820px) {
   .meme-editor .editor-wrapper {
-    grid-template: 2.83em 7.5em calc(100vh - 10.33em - 40px - 6rem) / 1fr 10.83em;
-    grid-template-areas: 'proj-name share' 'tools tools' 'canvas canvas';
-    width: max-content;
-    height: unset;
+    grid-template: 2.83em 1fr max-content / 2.83em 1fr 10.83em;
+    grid-template-areas: 'close-btn proj-name share' 'canvas canvas canvas' 'tools tools tools';
+    width: 90%;
+    height: 90%;
     margin-inline: auto;
   }
   .meme-editor .tools {
-    grid-template: repeat(2, 2.67em) / repeat(4, 2.67em) 1fr repeat(4, 2.67em) 1fr repeat(
+    grid-template: repeat(2, 2.67em) / repeat(4, 2.67em) 15px repeat(4, 2.67em);
+    /* grid-template: repeat(2, 2.67em) / repeat(4, 2.67em) 1fr repeat(4, 2.67em) 1fr repeat(
         2,
         2.67em
-      );
-    row-gap: 0;
+      ); */
+    gap: 20px;
     grid-template-areas:
-      'text text text text . text-size text-size text-size text-size . draw-tools draw-tools'
-      'text-switch trash text-add emoji . text-font text-font text-color text-align . draw-color draw-width';
-  }
-  .tools .text-size .inner-input {
-    display: flex;
+      'text text text text . text-size text-size text-size text-align '
+      'text-switch trash text-add emoji . text-font text-font text-color text-outline ';
+    max-width: unset;
   }
 
-  .tools .text-color:not(.mobile-only) [for='text-outline'] {
-    display: block;
-  }
-
-  .tools .text-color.mobile-only {
-    display: none;
+  .meme-editor .canvas > canvas {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
   }
 
   .tools .text-switch,
   .tools .text-line {
     display: flex;
   }
-  .text-font.dropdown-container .caret-up {
-    display: none;
-  }
-
-  .text-font.dropdown-container .caret-down {
-    display: flex;
-  }
-}
-/* tablet/mobile only */
-@media screen and (max-width: 1300px) {
-  .text-align:has(.text-left.selected) > * {
-    transform: translateX(64px);
-  }
-  .text-align:has(.text-center.selected) > * {
-    transform: translateX(0);
-  }
-  .text-align:has(.text-right.selected) > * {
-    transform: translateX(-64px);
-  }
-  .text-align {
-    pointer-events: all;
-    cursor: pointer;
-  }
-  .text-align > * {
-    pointer-events: none;
-  }
 }
 /* desktop */
-@media screen and (min-width: 1300px) {
+@media screen and (min-width: 1100px) {
   .dropdown-menu {
-    width: 100%;
-  }
-  .text-align {
-    pointer-events: none;
-    cursor: auto;
-  }
-  .text-align > * {
-    pointer-events: all;
+    width: 130%;
   }
 
   .meme-editor {
@@ -803,30 +810,33 @@ canvas[name='canvas'] {
   }
 
   .meme-editor .editor-wrapper {
-    width: 100%;
-    height: 100%;
-    grid-template: 2.83em 1fr / 1fr 10.83em max-content;
-    grid-template-areas: 'proj-name share tools' 'canvas canvas tools';
+    grid-template: 2.83em 1fr / 2.83em 1fr max-content;
+    grid-template-areas: 'close-btn proj-name share' 'canvas canvas tools';
   }
 
   .meme-editor .tools {
     grid-area: tools;
     display: grid;
-    grid-template: repeat(8, 2.67em) / repeat(4, 2.67em);
+    grid-template: repeat(6, 2.67em) / repeat(4, 2.67em);
     gap: 20px;
     align-content: space-between;
     grid-template-areas:
       'text text text text'
-      'text-switch text-switch trash text-add'
-      'text-font text-font text-font text-font'
+      'text-switch trash text-add text-align'
+      'text-font text-font text-color text-outline'
       'text-size text-size text-size text-size'
-      'text-color text-align text-align text-align'
+      'emoji emoji emoji emoji'
+      'emoji emoji emoji emoji';
+    /* grid-template-areas:
+      'text text text text'
+      'text-switch text-align trash text-add'
+      'text-font text-font text-color text-outline'
+      'text-size text-size text-size text-size'
       'emoji emoji emoji emoji'
       'emoji emoji emoji emoji'
-      'draw-tools draw-tools draw-color draw-width';
+      'draw-tools draw-tools draw-color draw-width'; */
     padding: 20px;
     height: fit-content;
-    align-self: center;
   }
 
   .tools .emoji {
@@ -851,10 +861,53 @@ canvas[name='canvas'] {
     display: flex;
   }
 
-  .tools .text-switch > *:not(.bi-arrow-down-up) {
+  .text-font.dropdown-container .caret-down {
     display: flex;
   }
-  .tools .text-switch > .bi-arrow-down-up {
+  .text-font.dropdown-container .caret-up {
     display: none;
   }
+
+  .dropdown-menu {
+    bottom: auto;
+    top: 100%;
+  }
+  .dropdown-container.on:hover::before,
+  .dropdown-container.on.selected::before {
+    bottom: auto;
+    top: 100%;
+  }
+
+  .dropdown-container.on:hover .dropdown-menu,
+  .dropdown-container.on.selected .dropdown-menu {
+    bottom: auto;
+    top: 120%;
+  }
+}
+
+/* PROJECT PAGE */
+.meme-project-card {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 1/1;
+  border-radius: 1.25rem;
+  align-items: center;
+  cursor: pointer;
+}
+.meme-project-card img {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.meme-project-card p {
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 85%;
+  font-size: 1.2em;
+  margin: 20px 0;
+  cursor: pointer;
+  user-select: none;
 }

@@ -14,6 +14,7 @@ let gMeme = {
 }
 
 function initMemeEditor(data) {
+  console.log(data)
   const { imgId = getRandImgId(), memeIdx = generateMemeIdx() } = data
   const meme = {
     meta: {
@@ -33,11 +34,6 @@ function initMemeEditor(data) {
   }
 
   gMeme = loadMeme(memeIdx) || meme
-}
-
-function generateMemeIdx() {
-  const { length } = loadFromStorage('memes') || {}
-  return length
 }
 
 function addLine(x, y, width) {
@@ -112,16 +108,16 @@ function getMemeData() {
 }
 
 function loadMeme(idx) {
-  const memes = loadFromStorage('memes')
-  if (!memes || !memes[idx]) return false
-  return memes[idx]
+  return loadMemeProject(idx)
 }
 
 function saveMeme(metaArgs) {
   const memes = loadFromStorage('memes') || []
+  console.log('stor', memes)
   gMeme.meta = { ...gMeme.meta, ...metaArgs }
   memes[gMeme.meta.idx] = gMeme
-  saveToStorage('memes', memes)
+  console.log('storAA', memes)
+  saveMemeProject(memes)
 }
 
 function getMemeMeta() {

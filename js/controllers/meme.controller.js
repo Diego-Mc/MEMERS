@@ -34,8 +34,6 @@ function _addEventListeners() {
 
   // TOOLS:
   onClick('.text-add', onAddText)
-  onClick('.text-switch .text-up', () => onSelectedLineChange(+1))
-  onClick('.text-switch .text-down', () => onSelectedLineChange(-1))
   onClick('.text-switch .text-up-down', () => onSelectedLineChange(+1))
   onInput('.text-line', onSetText)
   onClick('.trash', onRemoveLine)
@@ -61,6 +59,13 @@ function _addEventListeners() {
 
   // SAVE MEME:
   onClick('.save-meme', onSaveMeme)
+
+  //CLOSE MEME:
+  onClick('.close-btn', onCloseEditor)
+}
+
+function onCloseEditor() {
+  document.querySelector('.meme-editor').classList.add('d-none')
 }
 
 function onAddEmoji({ innerText: emoji }) {
@@ -99,7 +104,8 @@ function _renderMemeName() {
 }
 
 function onSaveMeme() {
-  const { value: name } = document.querySelector('.proj-name input')
+  let { value: name } = document.querySelector('.proj-name input')
+  name = name || 'Untitled meme project'
   const memePreview = getCanvasAsImgSrc()
   saveMeme({ name, memePreview })
 }
@@ -178,11 +184,14 @@ function updateTools(toolName = undefined) {
     },
     // Font
     font: () => {
-      const elSelectedFont = document.querySelector(
-        '.dropdown-container .inner-input'
-      )
-      elSelectedFont.setAttribute('name', font.toLowerCase())
-      elSelectedFont.innerText = font
+      document
+        .querySelector(`.text-font .dropdown-menu .selected`)
+        .classList.remove('selected')
+      document
+        .querySelector(
+          `.text-font .dropdown-menu [name="${font.toLowerCase()}"]`
+        )
+        .classList.add('selected')
     },
 
     // Fill color

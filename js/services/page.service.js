@@ -67,6 +67,20 @@ function getMemeProjects() {
   return gMemeProjects
 }
 
+function saveMemeProject(memes) {
+  saveToStorage('memes', memes)
+  initMemeProjects()
+}
+
+function loadMemeProject(idx) {
+  return gMemeProjects[idx]
+}
+
+function generateMemeIdx() {
+  const { length } = loadFromStorage('memes') || []
+  return length
+}
+
 function initMemeTagsMap() {
   // create a map for instant search results later (& tags handling)
   gMemeTemplates.forEach((template) => {

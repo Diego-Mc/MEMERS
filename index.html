@@ -36,25 +36,25 @@
   </head>
   <body>
     <section class="meme-editor d-none">
-      <button
-        class="close-btn"
-        onclick="this.parentElement.classList.toggle('d-none')">
-        <i class="bi bi-x-lg"></i>
-      </button>
       <div class="editor-wrapper">
+        <button class="close-btn" title="Close editor">
+          <i class="bi bi-x-lg"></i>
+        </button>
         <section class="proj-name">
           <input type="text" placeholder="Untitled Meme Project..." />
-          <i class="bi bi-cloud-arrow-down-fill save-meme"></i>
-          <i class="bi bi-cloud-check-fill d-none"></i>
         </section>
         <section class="share">
           <div class="btn-group">
-            <i class="bi bi-download">
+            <i class="bi bi-download" title="Download meme">
               <a class="bi meme-download" download="meme" href=""> </a
             ></i>
-            <i class="bi bi-facebook"></i>
-            <i class="bi bi-whatsapp"></i>
-            <i class="bi bi-share-fill"></i>
+            <!-- <i class="bi bi-facebook"></i> -->
+            <!-- <i class="bi bi-whatsapp"></i> -->
+            <i
+              class="bi bi-cloud-arrow-down-fill save-meme"
+              title="Save project"></i>
+            <!-- <i class="bi bi-cloud-check-fill"></i> -->
+            <i class="bi bi-share-fill" title="Share meme"></i>
           </div>
         </section>
         <aside class="tools">
@@ -63,29 +63,30 @@
             type="text"
             value=""
             placeholder="Add text here..." />
-          <div class="btn-group text-switch">
-            <i class="bi bi-arrow-up text-up"></i>
-            <i class="bi bi-arrow-down text-down"></i>
+
+          <button class="text-switch" title="Switch selection">
             <i class="bi bi-arrow-down-up text-up-down"></i>
-          </div>
-          <button class="trash">
+          </button>
+          <button class="trash" title="Delete">
             <i class="bi bi-trash-fill"></i>
           </button>
-          <button class="text-add">
+          <button class="text-add" title="Add text">
             <i class="bi bi-plus-circle-fill"></i>
           </button>
-          <div class="btn-group dropdown-container on text-font">
+          <div
+            class="btn-group dropdown-container on text-font"
+            title="Select font">
             <span class="btn-i">
               <i class="bi bi-fonts"></i>
             </span>
-            <span class="inner-input">
+            <!-- <span class="inner-input">
               <span name="impact">Impact</span>
-            </span>
+            </span> -->
 
             <i class="bi bi-caret-down-fill caret-down"></i>
             <i class="bi bi-caret-up-fill caret-up"></i>
             <ul class="dropdown-menu">
-              <li class="dropdown-item" name="impact">Impact</li>
+              <li class="dropdown-item selected" name="impact">Impact</li>
               <li class="dropdown-item" name="secular one">Secular One</li>
               <li class="dropdown-item" name="rubik">Rubik</li>
               <li class="dropdown-item" name="montserrat">Montserrat</li>
@@ -93,31 +94,38 @@
           </div>
           <div class="btn-group text-size">
             <span class="btn-i">
-              <i class="bi bi-type"></i>
+              <svg
+                style="min-width: 24px; min-height: 24px"
+                viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M2 4V7H7V19H10V7H15V4H2M21 9H12V12H15V19H18V12H21V9Z" />
+              </svg>
             </span>
             <span class="inner-input">16px</span>
-            <i class="bi bi-dash-lg font-decrease"></i>
-            <i class="bi bi-plus-lg font-increase"></i>
+            <i
+              class="bi bi-dash-lg font-decrease"
+              title="Decrease font size"></i>
+            <i
+              class="bi bi-plus-lg font-increase"
+              title="Increase font size"></i>
           </div>
-          <button class="text-color mobile-only">
+          <button class="text-outline" title="Outline color">
             <label for="text-outline">
               <input type="color" name="" id="text-outline" />
             </label>
           </button>
-          <button class="text-color">
-            <label for="text-outline">
-              <input type="color" name="" id="text-outline" />
-            </label>
+          <button class="text-color" title="Fill color">
             <label for="text-fill">
               <input type="color" name="" id="text-fill" />
             </label>
           </button>
-          <div class="btn-group text-align">
+          <div class="btn-group text-align" title="Text alignment">
             <i class="bi bi-text-left text-left"></i>
             <i class="bi bi-text-center text-center"></i>
             <i class="bi bi-text-right text-right"></i>
           </div>
-          <button class="emoji-btn">
+          <button class="emoji-btn" title="Select emoji">
             <i class="bi bi-emoji-sunglasses-fill"></i>
           </button>
           <div class="btn-group emoji">

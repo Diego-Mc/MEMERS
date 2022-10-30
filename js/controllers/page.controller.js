@@ -45,18 +45,30 @@ function onRenderProjects() {
   document.querySelector('.filter-items').innerHTML = ''
 
   const memeProjectsHTML = getMemeProjects()
-    .map(
-      ({ meta: { idx, name, memePreview } }) => `<img
-          class="img-item meme-preview"
-          src="${memePreview}"
-          data-id="${idx}"
-          alt=${name} />`
-    )
+    .map(({ meta: { idx, name, memePreview } }) => {
+      // const img = newImage()
+      // img.onload = function () {
+      //   const { naturalWidth: w, naturalHeight: h } = this
+      //   if (_isHorizontal(w / h)) this.classList.add('horizontal')
+      //   else if (_isVertical(w / h)) this.classList.add('vertical')
+      // }
+      ;`
+          <article class="meme-project-card">
+           <img
+             class="img-item meme-preview"
+             src="${memePreview}"
+             alt=${name}
+             data-id="${idx}" />
+           <p class="project-name">${name}</p>
+         </article>`
+    })
     .join('')
   document.querySelector('.image-gallery').innerHTML = memeProjectsHTML
 
   _addMemeTemplateCb(editProject)
 }
+
+function _isHorizontal() {}
 
 function editProject(memeIdx) {
   initMemeEditor({ memeIdx })
